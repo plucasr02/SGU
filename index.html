@@ -10,7 +10,7 @@
     <link rel="icon" id="app-favicon" type="image/png" href="icondbv.png">
     <link rel="apple-touch-icon" id="app-touch-icon" href="icondbv.png">
     <link rel="manifest" id="app-manifest">
-    <title>Controle de Desbravadores - Unidade Eliseu</title>
+    <title>SGU</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -262,7 +262,7 @@
                         <label for="data-reuniao" class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">
                             <i class="fa-regular fa-calendar-days text-green-700 mr-1"></i> Selecione a Data da Reunião (Dia do Ano)
                         </label>
-                        <input type="date" id="data-reuniao" 
+                        <input type="date" id="data-reuniao" onchange="salvarEstadoApp()"
                             class="w-full md:w-72 bg-gray-50 border-2 border-gray-300 text-gray-900 text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-3 font-semibold transition cursor-pointer">
                     </div>
 
@@ -396,7 +396,7 @@
                     <label for="anotacoes-cantinho" class="block text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-2">
                         <i class="fa-solid fa-pen-to-square text-green-600 mr-1.5"></i> Anotações
                     </label>
-                    <textarea id="anotacoes-cantinho" rows="5"
+                    <textarea id="anotacoes-cantinho" rows="5" oninput="salvarEstadoApp()"
                         placeholder="Digite aqui o que aconteceu durante o Cantinho da Unidade..."
                         class="w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-4 transition resize-y"></textarea>
 
@@ -480,7 +480,7 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <select id="select-livro"
+                            <select id="select-livro" onchange="salvarEstadoApp()"
                                 class="flex-1 bg-white border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 cursor-pointer">
                                 <option value="">Nenhum livro cadastrado ainda</option>
                             </select>
@@ -554,7 +554,7 @@
                     <label for="anotacoes-secretario" class="block text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-2">
                         <i class="fa-solid fa-pen-to-square text-green-600 mr-1.5"></i> Anotações
                     </label>
-                    <textarea id="anotacoes-secretario" rows="5"
+                    <textarea id="anotacoes-secretario" rows="5" oninput="salvarEstadoApp()"
                         placeholder="Digite aqui as anotações, atas ou observações da secretaria..."
                         class="w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-4 transition resize-y"></textarea>
 
@@ -765,9 +765,221 @@
         ];
         let imagemSecretarioAnexada = null;
         let modoEscuroAtivo = false;
+        let abaAtual = "chamada";
+        let restaurandoEstado = false;
+
+        // ==================== PERSISTÊNCIA DE ESTADO (RECARREGAMENTO) ====================
+        function salvarEstadoApp() {
+            if (restaurandoEstado) return;
+            try {
+                const chamada = desbravadores.map((_, idx) => {
+                    const res = {};
+                    criterios.forEach(crit => {
+                        const marcado = document.querySelector(`input[name="dbv_${idx}_${crit.id}"]:checked`);
+                        res[crit.id] = marcado ? marcado.value : null;
+                    });
+                    return res;
+                });
+
+                const cargos = desbravadores.map((_, idx) => {
+                    const sel = document.getElementById(`cargo-dbv-${idx}`);
+                    return sel ? sel.value : "Sem Cargo";
+                });
+
+                const atividadesMarcadasCantinho = {};
+                atividadesCantinho.forEach(item => {
+                    const chk = document.getElementById(`chk-cantinho-${item.id}`);
+                    atividadesMarcadasCantinho[item.id] = chk ? chk.checked : false;
+                });
+
+                const estado = {
+                    abaAtual,
+                    modoEscuroAtivo,
+                    dataReuniao: document.getElementById("data-reuniao")?.value || "",
+                    desbravadores: [...desbravadores],
+                    chamada,
+                    cargos,
+                    cantinho: {
+                        anotacoes: document.getElementById("anotacoes-cantinho")?.value || "",
+                        atividades: atividadesMarcadasCantinho,
+                        listaEspecialidades: [...listaEspecialidades],
+                        especialidadesSelecionadas: Array.from(especialidadesSelecionadas),
+                        listaLivros: [...listaLivros],
+                        livroSelecionado: document.getElementById("select-livro")?.value || "",
+                        imagem: imagemCantinhoAnexada
+                    },
+                    secretario: {
+                        anotacoes: document.getElementById("anotacoes-secretario")?.value || "",
+                        opcoes: opcoesSecretario.map(o => ({ ...o })),
+                        imagem: imagemSecretarioAnexada
+                    }
+                };
+
+                const jsonEstado = JSON.stringify(estado);
+                try {
+                    window.name = "UNIDADE_ELISEU_STATE:" + jsonEstado;
+                } catch (e) {}
+
+                try {
+                    const storage = window["local" + "Storage"];
+                    if (storage) storage.setItem("unidade_eliseu_estado_v1", jsonEstado);
+                } catch (e) {}
+            } catch (erro) {
+                console.warn("Não foi possível salvar o estado:", erro);
+            }
+        }
+
+        function carregarEstadoApp() {
+            let bruto = null;
+            try {
+                const storage = window["local" + "Storage"];
+                if (storage) bruto = storage.getItem("unidade_eliseu_estado_v1");
+            } catch (e) {}
+
+            if (!bruto && typeof window.name === "string" && window.name.startsWith("UNIDADE_ELISEU_STATE:")) {
+                bruto = window.name.slice("UNIDADE_ELISEU_STATE:".length);
+            }
+
+            if (!bruto) return false;
+
+            try {
+                const estado = JSON.parse(bruto);
+                if (!estado || typeof estado !== "object") return false;
+
+                restaurandoEstado = true;
+
+                // 1. Data da reunião
+                const campoData = document.getElementById("data-reuniao");
+                if (campoData && estado.dataReuniao) {
+                    campoData.value = estado.dataReuniao;
+                }
+
+                // 2. Lista de Desbravadores
+                if (Array.isArray(estado.desbravadores) && estado.desbravadores.length > 0) {
+                    desbravadores.length = 0;
+                    estado.desbravadores.forEach(nome => desbravadores.push(nome));
+                }
+
+                // 3. Renderiza Chamada e restaura marcações
+                renderizarLista();
+                if (Array.isArray(estado.chamada)) {
+                    estado.chamada.forEach((res, idx) => {
+                        if (!res || idx >= desbravadores.length) return;
+                        criterios.forEach(crit => {
+                            if (res[crit.id]) {
+                                const radio = document.querySelector(`input[name="dbv_${idx}_${crit.id}"][value="${res[crit.id]}"]`);
+                                if (radio) {
+                                    radio.checked = true;
+                                    radio.dataset.wasChecked = "true";
+                                }
+                            }
+                        });
+                        if (res.presenca === "Não") {
+                            aplicarBloqueioCriterios(idx, true);
+                        }
+                    });
+                }
+                atualizarContadores();
+
+                // 4. Renderiza Cargos e restaura valores
+                renderizarCargos();
+                if (Array.isArray(estado.cargos)) {
+                    estado.cargos.forEach((cargo, idx) => {
+                        const sel = document.getElementById(`cargo-dbv-${idx}`);
+                        if (sel && cargo) sel.value = cargo;
+                    });
+                }
+                atualizarContadorCargos();
+
+                // 5. Restaura Cantinho da Unidade
+                if (estado.cantinho) {
+                    if (Array.isArray(estado.cantinho.listaEspecialidades)) {
+                        listaEspecialidades.length = 0;
+                        estado.cantinho.listaEspecialidades.forEach(e => listaEspecialidades.push(e));
+                    }
+                    especialidadesSelecionadas.clear();
+                    if (Array.isArray(estado.cantinho.especialidadesSelecionadas)) {
+                        estado.cantinho.especialidadesSelecionadas.forEach(e => especialidadesSelecionadas.add(e));
+                    }
+                    if (Array.isArray(estado.cantinho.listaLivros)) {
+                        listaLivros.length = 0;
+                        estado.cantinho.listaLivros.forEach(l => listaLivros.push(l));
+                    }
+                }
+
+                renderizarCantinho();
+
+                if (estado.cantinho) {
+                    const campoAnotCantinho = document.getElementById("anotacoes-cantinho");
+                    if (campoAnotCantinho) campoAnotCantinho.value = estado.cantinho.anotacoes || "";
+
+                    if (estado.cantinho.atividades) {
+                        atividadesCantinho.forEach(item => {
+                            const chk = document.getElementById(`chk-cantinho-${item.id}`);
+                            if (chk) {
+                                chk.checked = Boolean(estado.cantinho.atividades[item.id]);
+                                aoAlterarCheckboxCantinho(item.id, chk.checked);
+                            }
+                        });
+                    }
+
+                    const selectLivro = document.getElementById("select-livro");
+                    if (selectLivro && estado.cantinho.livroSelecionado !== undefined) {
+                        selectLivro.value = estado.cantinho.livroSelecionado;
+                    }
+
+                    if (estado.cantinho.imagem && estado.cantinho.imagem.dataUrl) {
+                        imagemCantinhoAnexada = estado.cantinho.imagem;
+                        document.getElementById("preview-imagem-cantinho").src = imagemCantinhoAnexada.dataUrl;
+                        document.getElementById("preview-imagem-cantinho-container").classList.remove("hidden");
+                        document.getElementById("nome-arquivo-imagem-cantinho").textContent = imagemCantinhoAnexada.nome || "Imagem anexada";
+                        document.getElementById("label-btn-imagem-cantinho").textContent = "Trocar Imagem";
+                    }
+                }
+
+                // 6. Restaura Secretário(a)
+                if (estado.secretario) {
+                    if (Array.isArray(estado.secretario.opcoes) && estado.secretario.opcoes.length > 0) {
+                        opcoesSecretario.length = 0;
+                        estado.secretario.opcoes.forEach(o => opcoesSecretario.push({ ...o }));
+                    }
+                }
+
+                renderizarSecretario();
+
+                if (estado.secretario) {
+                    const campoAnotSec = document.getElementById("anotacoes-secretario");
+                    if (campoAnotSec) campoAnotSec.value = estado.secretario.anotacoes || "";
+
+                    if (estado.secretario.imagem && estado.secretario.imagem.dataUrl) {
+                        imagemSecretarioAnexada = estado.secretario.imagem;
+                        document.getElementById("preview-imagem-secretario").src = imagemSecretarioAnexada.dataUrl;
+                        document.getElementById("preview-imagem-secretario-container").classList.remove("hidden");
+                        document.getElementById("nome-arquivo-imagem-secretario").textContent = imagemSecretarioAnexada.nome || "Imagem anexada";
+                        document.getElementById("label-btn-imagem-secretario").textContent = "Trocar Imagem";
+                    }
+                }
+
+                // 7. Restaura Modo Escuro e Aba Ativa
+                if (estado.modoEscuroAtivo && !modoEscuroAtivo) {
+                    window.alternarModoEscuro(true);
+                }
+
+                if (estado.abaAtual) {
+                    window.alternarAba(estado.abaAtual, true);
+                }
+
+                restaurandoEstado = false;
+                return true;
+            } catch (erro) {
+                restaurandoEstado = false;
+                console.warn("Erro ao restaurar estado salvo:", erro);
+                return false;
+            }
+        }
 
         // Alterna entre Modo Claro e Modo Escuro estilo Smartphone
-        window.alternarModoEscuro = function() {
+        window.alternarModoEscuro = function(silencioso = false) {
             modoEscuroAtivo = !modoEscuroAtivo;
             const body = document.body;
             const btn = document.getElementById("btn-modo-escuro");
@@ -785,7 +997,7 @@
                 bolinha?.classList.add("translate-x-5", "bg-neutral-950", "text-green-400");
                 if (icone) icone.className = "fa-solid fa-moon text-[10px]";
                 if (texto) texto.textContent = "Modo Escuro";
-                mostrarNotificacao("Modo Escuro ativado!", "info");
+                if (!silencioso) mostrarNotificacao("Modo Escuro ativado!", "info");
             } else {
                 body.classList.remove("dark-mode");
                 btn?.setAttribute("aria-pressed", "false");
@@ -795,8 +1007,9 @@
                 bolinha?.classList.remove("translate-x-5", "bg-neutral-950", "text-green-400");
                 if (icone) icone.className = "fa-solid fa-sun text-[10px]";
                 if (texto) texto.textContent = "Modo Escuro";
-                mostrarNotificacao("Modo Claro ativado!", "info");
+                if (!silencioso) mostrarNotificacao("Modo Claro ativado!", "info");
             }
+            salvarEstadoApp();
         };
 
         // Inicialização ao carregar a página
@@ -808,10 +1021,13 @@
             const campoData = document.getElementById("data-reuniao");
             if (campoData) campoData.value = `${ano}-${mes}-${dia}`;
 
-            renderizarLista();
-            renderizarCargos();
-            renderizarCantinho();
-            renderizarSecretario();
+            const estadoRestaurado = carregarEstadoApp();
+            if (!estadoRestaurado) {
+                renderizarLista();
+                renderizarCargos();
+                renderizarCantinho();
+                renderizarSecretario();
+            }
             configurarPWA();
 
             // Fecha o menu suspenso de abas ao clicar fora dele
@@ -860,7 +1076,7 @@
         };
 
         // Alterna entre as abas do sistema
-        window.alternarAba = function(aba) {
+        window.alternarAba = function(aba, silencioso = false) {
             const conteudoChamada = document.getElementById("conteudo-chamada");
             const conteudoCargos = document.getElementById("conteudo-cargos");
             const conteudoCantinho = document.getElementById("conteudo-cantinho");
@@ -877,6 +1093,9 @@
                 cantinho: "Cantinho da Unidade",
                 secretario: "Secretário(a)"
             };
+
+            if (!nomesAbas[aba]) aba = "chamada";
+            abaAtual = aba;
 
             conteudoChamada.classList.add("hidden");
             conteudoCargos.classList.add("hidden");
@@ -907,6 +1126,7 @@
 
             // Recolhe o menu interativo após escolher a aba
             window.toggleMenuAbas(true);
+            if (!silencioso) salvarEstadoApp();
         };
 
         // Função para mostrar mensagens amigáveis na tela
@@ -1043,6 +1263,7 @@
             input.value = "";
             atualizarContadores();
             atualizarContadorCargos();
+            salvarEstadoApp();
             mostrarNotificacao(`${nomeFormatado} foi adicionado à unidade!`, "sucesso");
         }
 
@@ -1115,6 +1336,7 @@
             atualizarContadorCargos();
 
             fecharModalRemover();
+            salvarEstadoApp();
             mostrarNotificacao(`${nomeRemovido} foi removido da lista.`, "info");
         }
 
@@ -1139,12 +1361,13 @@
             }
 
             atualizarContadores();
+            salvarEstadoApp();
         }
 
         // Bloqueia ou desbloqueia visualmente e funcionalmente os critérios dependentes da presença
         function aplicarBloqueioCriterios(index, bloquear) {
             const containersDependentes = document.querySelectorAll(`.criterio-dependente-${index}`);
-            
+
             criterios.forEach(crit => {
                 if (crit.id !== "presenca") {
                     const inputs = document.querySelectorAll(`input[name="dbv_${index}_${crit.id}"]`);
@@ -1167,7 +1390,7 @@
             });
         }
 
-        // Atualiza a contagem total e de desbravadores totalmente avaliados
+        // Atualiza a contagem de desbravadores totalmente avaliados e o total da unidade
         function atualizarContadores() {
             let avaliadosCompletos = 0;
 
@@ -1202,8 +1425,10 @@
                 }
             });
 
-            document.getElementById("total-desbravadores").textContent = desbravadores.length;
-            document.getElementById("total-avaliados").textContent = `${avaliadosCompletos}/${desbravadores.length}`;
+            const totalDbvEl = document.getElementById("total-desbravadores");
+            const totalAvalEl = document.getElementById("total-avaliados");
+            if (totalDbvEl) totalDbvEl.textContent = desbravadores.length;
+            if (totalAvalEl) totalAvalEl.textContent = `${avaliadosCompletos}/${desbravadores.length}`;
         }
 
         // Marca todos os itens de todos os desbravadores como "Sim" para agilizar
@@ -1211,15 +1436,17 @@
             desbravadores.forEach((_, index) => {
                 aplicarBloqueioCriterios(index, false);
             });
-            document.querySelectorAll('input[type="radio"]').forEach(r => {
-                r.dataset.wasChecked = "false";
-            });
-            const radiosSim = document.querySelectorAll('input[type="radio"][value="Sim"]');
+            const radiosSim = document.querySelectorAll('#lista-desbravadores input[type="radio"][value="Sim"]');
             radiosSim.forEach(radio => {
                 radio.checked = true;
                 radio.dataset.wasChecked = "true";
             });
+            const radiosNao = document.querySelectorAll('#lista-desbravadores input[type="radio"][value="Não"]');
+            radiosNao.forEach(radio => {
+                radio.dataset.wasChecked = "false";
+            });
             atualizarContadores();
+            salvarEstadoApp();
             mostrarNotificacao("Todos os critérios foram marcados como 'Sim'!", "sucesso");
         }
 
@@ -1233,6 +1460,7 @@
                 radio.dataset.wasChecked = "false";
             });
             atualizarContadores();
+            salvarEstadoApp();
             mostrarNotificacao("Todas as marcações da chamada foram desmarcadas!", "info");
         }
 
@@ -1416,6 +1644,7 @@
                 }
             });
             document.getElementById("contador-cargos").textContent = `${comCargo}/${desbravadores.length}`;
+            salvarEstadoApp();
         }
 
         function limparCargos() {
@@ -1424,6 +1653,7 @@
                 if (select) select.value = "Sem Cargo";
             });
             atualizarContadorCargos();
+            salvarEstadoApp();
             mostrarNotificacao("Todos os cargos foram desmarcados e voltaram para 'Sem Cargo'.", "info");
         }
 
@@ -1560,6 +1790,7 @@
                     painel.classList.add("hidden");
                 }
             }
+            salvarEstadoApp();
         }
 
         function renderizarOpcoesSelectCantinho(tipo) {
@@ -1631,6 +1862,7 @@
                 especialidadesSelecionadas.delete(nome);
             }
             renderizarOpcoesSelectCantinho("especialidade");
+            salvarEstadoApp();
         }
 
         function adicionarItemCantinho(tipo) {
@@ -1664,6 +1896,7 @@
                 select.value = String(lista.length - 1);
             }
 
+            salvarEstadoApp();
             mostrarNotificacao(isEsp ? `Especialidade "${valor}" adicionada e marcada!` : `Livro "${valor}" adicionado!`, "sucesso");
         }
 
@@ -1712,6 +1945,7 @@
                 if (removido && !removido.fixa) {
                     opcoesSecretario.splice(index, 1);
                     renderizarSecretario();
+                    salvarEstadoApp();
                     mostrarNotificacao(`Opção "${removido.label}" removida.`, "info");
                 }
                 fecharModalRemoverItemCantinho();
@@ -1728,6 +1962,7 @@
             lista.splice(index, 1);
             renderizarOpcoesSelectCantinho(tipo);
             fecharModalRemoverItemCantinho();
+            salvarEstadoApp();
             mostrarNotificacao(isEsp ? `Especialidade "${removido}" removida.` : `Livro "${removido}" removido.`, "info");
         }
 
@@ -1806,6 +2041,7 @@
                     document.getElementById("nome-arquivo-imagem-cantinho").textContent = arquivo.name;
                     document.getElementById("label-btn-imagem-cantinho").textContent = "Trocar Imagem";
 
+                    salvarEstadoApp();
                     mostrarNotificacao("Imagem anexada às anotações!", "sucesso");
                 };
                 img.src = e.target.result;
@@ -1821,6 +2057,7 @@
             document.getElementById("preview-imagem-cantinho-container").classList.add("hidden");
             document.getElementById("nome-arquivo-imagem-cantinho").textContent = "Nenhuma imagem anexada (opcional)";
             document.getElementById("label-btn-imagem-cantinho").textContent = "Anexar Imagem";
+            salvarEstadoApp();
             if (!silencioso) {
                 mostrarNotificacao("Imagem removida das anotações.", "info");
             }
@@ -1849,6 +2086,7 @@
             }
 
             atualizarContadorCantinho();
+            salvarEstadoApp();
             mostrarNotificacao("Tudo foi desmarcado e limpo no Cantinho da Unidade!", "info");
         }
 
@@ -2028,6 +2266,7 @@
             if (!opcoesSecretario[index]) return;
             opcoesSecretario[index].marcada = checked;
             renderizarSecretario();
+            salvarEstadoApp();
         }
 
         function atualizarContadorSecretario() {
@@ -2066,6 +2305,7 @@
 
             input.value = "";
             renderizarSecretario();
+            salvarEstadoApp();
             mostrarNotificacao(`Opção "${texto}" adicionada e marcada!`, "sucesso");
         }
 
@@ -2132,6 +2372,7 @@
                     document.getElementById("nome-arquivo-imagem-secretario").textContent = arquivo.name;
                     document.getElementById("label-btn-imagem-secretario").textContent = "Trocar Imagem";
 
+                    salvarEstadoApp();
                     mostrarNotificacao("Imagem anexada às anotações do Secretário(a)!", "sucesso");
                 };
                 img.src = e.target.result;
@@ -2147,6 +2388,7 @@
             document.getElementById("preview-imagem-secretario-container").classList.add("hidden");
             document.getElementById("nome-arquivo-imagem-secretario").textContent = "Nenhuma imagem anexada (opcional)";
             document.getElementById("label-btn-imagem-secretario").textContent = "Anexar Imagem";
+            salvarEstadoApp();
             if (!silencioso) {
                 mostrarNotificacao("Imagem removida das anotações.", "info");
             }
@@ -2165,6 +2407,7 @@
             }
 
             renderizarSecretario();
+            salvarEstadoApp();
             mostrarNotificacao("Tudo foi desmarcado e limpo na aba Secretário(a)!", "info");
         }
 
