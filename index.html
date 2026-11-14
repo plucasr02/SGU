@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Desbravadores - Chamada e Avaliação</title>
-    <!-- Configurações para Transformar em Aplicativo (PWA / Android) -->
-    <meta name="theme-color" content="#22c55e">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Unidade Eliseu">
-    <link rel="icon" type="image/png" href="barraca.png">
-    <link rel="apple-touch-icon" href="barraca.png">
-    
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Unidade Eliseu">
+    <link rel="icon" id="app-favicon" type="image/png" href="icondbv.png">
+    <link rel="apple-touch-icon" id="app-touch-icon" href="icondbv.png">
+    <link rel="manifest" id="app-manifest">
+    <title>Controle de Desbravadores - Unidade Eliseu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -47,7 +46,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         }
         .tab-btn:not(.active) {
-            background-color: rgba(38, 38, 38, 0.8);
+            background-color: rgba(38, 38, 38, 0.85);
             color: #d4d4d4;
         }
         .tab-btn:not(.active):hover {
@@ -63,24 +62,9 @@
         <div class="max-w-5xl mx-auto px-4 pt-6 pb-4">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <!-- Escudo estilizado com o ícone da barraca -->
-                    <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-inner shrink-0 border-2 border-green-500 p-1.5 overflow-hidden">
-                        <img src="barraca.png" alt="Ícone Unidade Eliseu" class="w-full h-full object-contain"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                        <svg class="hidden w-full h-full" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M168 96 L402 96 L484 416 L248 416 Z" fill="#52b765" stroke="#000" stroke-width="18" stroke-linejoin="round"/>
-                            <path d="M168 96 Q285 135 402 96" fill="none" stroke="#000" stroke-width="18" stroke-linecap="round"/>
-                            <line x1="230" y1="168" x2="295" y2="168" stroke="#000" stroke-width="16" stroke-linecap="round"/>
-                            <circle cx="326" cy="168" r="8" fill="#000"/><circle cx="355" cy="168" r="8" fill="#000"/>
-                            <line x1="275" y1="212" x2="415" y2="212" stroke="#000" stroke-width="16" stroke-linecap="round"/>
-                            <rect x="248" y="376" width="236" height="40" fill="#86d894" stroke="#000" stroke-width="18" stroke-linejoin="round"/>
-                            <circle cx="400" cy="346" r="8" fill="#000"/><circle cx="430" cy="346" r="8" fill="#000"/>
-                            <polygon points="168,96 42,416 294,416" fill="#3a8e49" stroke="#000" stroke-width="18" stroke-linejoin="round"/>
-                            <polygon points="168,280 105,325 95,416 241,416 231,325" fill="#52b765" stroke="#000" stroke-width="16" stroke-linejoin="round"/>
-                            <polygon points="168,280 132,416 204,416" fill="#86d894" stroke="#000" stroke-width="15" stroke-linejoin="round"/>
-                            <line x1="42" y1="365" x2="10" y2="416" stroke="#000" stroke-width="18" stroke-linecap="round"/>
-                            <line x1="294" y1="365" x2="326" y2="416" stroke="#000" stroke-width="18" stroke-linecap="round"/>
-                        </svg>
+                    <!-- Escudo com o brasão oficial da Unidade Eliseu -->
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-inner shrink-0 border-2 border-green-500 p-1 overflow-hidden">
+                        <img id="header-barraca-img" src="icondbv.png" alt="Brasão Desbravadores Unidade Eliseu" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Unidade Eliseu</h1>
@@ -88,22 +72,17 @@
                     </div>
                 </div>
                 
-                <!-- Botões do Cabeçalho -->
-                <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
-                    <!-- Botão de Instalar App (Aparece automaticamente no Android) -->
-                    <button id="btn-instalar" class="hidden w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg border-2 border-green-400">
-                        <i class="fa-brands fa-android text-lg"></i>
+                <!-- Botões de Ação Rápida no Topo -->
+                <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
+                    <button id="btn-instalar-app" onclick="instalarApp()" class="hidden bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
+                        <i class="fa-brands fa-android text-base"></i>
                         Instalar App
                     </button>
-
-                    <!-- Botão Relatório Geral (Une as 3 abas em um único PDF) -->
-                    <button onclick="gerarPDFGeral()" class="w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-lg border border-green-400">
+                    <button id="btn-relatorio-geral" onclick="gerarRelatorioGeral()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
                         <i class="fa-solid fa-file-lines"></i>
                         Relatório Geral
                     </button>
-
-                    <!-- Botão rápido para marcar todos como "Sim" -->
-                    <button id="btn-marcar-todos" onclick="marcarTodosSim()" class="w-full sm:w-auto bg-neutral-900 hover:bg-neutral-800 text-green-400 border border-green-600 font-semibold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
+                    <button id="btn-marcar-todos" onclick="marcarTodosSim()" class="bg-neutral-900 hover:bg-neutral-800 text-green-400 border border-green-600 font-semibold py-2.5 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
                         <i class="fa-solid fa-check-double"></i>
                         Marcar Todos "Sim"
                     </button>
@@ -112,17 +91,21 @@
 
             <!-- Navegação por Abas -->
             <nav class="flex flex-wrap gap-2 mt-6 border-t border-neutral-800 pt-4">
-                <button id="tab-chamada" onclick="alternarAba('chamada')" class="tab-btn active flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                <button id="tab-chamada" onclick="alternarAba('chamada')" class="tab-btn active flex-1 sm:flex-none px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-clipboard-check"></i>
                     Chamada e Avaliação
                 </button>
-                <button id="tab-cargos" onclick="alternarAba('cargos')" class="tab-btn flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                <button id="tab-cargos" onclick="alternarAba('cargos')" class="tab-btn flex-1 sm:flex-none px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users-gear"></i>
                     Cargos da Unidade
                 </button>
-                <button id="tab-cantinho" onclick="alternarAba('cantinho')" class="tab-btn flex-1 sm:flex-none px-5 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                <button id="tab-cantinho" onclick="alternarAba('cantinho')" class="tab-btn flex-1 sm:flex-none px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-book-open-reader"></i>
                     Cantinho da Unidade
+                </button>
+                <button id="tab-secretario" onclick="alternarAba('secretario')" class="tab-btn flex-1 sm:flex-none px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-folder-open"></i>
+                    Secretário(a)
                 </button>
             </nav>
         </div>
@@ -133,8 +116,8 @@
         
         <!-- ==================== ABA 1: CHAMADA E AVALIAÇÃO ==================== -->
         <div id="conteudo-chamada">
-            <!-- Caixa Superior: Seleção do Dia do Ano e Resumo -->
-            <section class="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-200">
+            <!-- Caixa Superior: Seleção do Dia do Ano, Adicionar Membro e Resumo -->
+            <section class="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-200 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex-1">
                         <label for="data-reuniao" class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">
@@ -157,16 +140,17 @@
                     </div>
                 </div>
 
-                <!-- Formulário para Adicionar Novo Desbravador -->
-                <div class="mt-6 pt-5 border-t border-gray-100">
+                <!-- Adicionar Novo Desbravador -->
+                <div class="pt-5 border-t border-gray-100">
                     <label for="novo-desbravador-nome" class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">
-                        <i class="fa-solid fa-user-plus text-green-700 mr-1"></i> Adicionar Novo Desbravador à Unidade
+                        <i class="fa-solid fa-user-plus text-green-700 mr-1"></i> Adicionar Desbravador à Unidade
                     </label>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <input type="text" id="novo-desbravador-nome" placeholder="Digite o nome completo do desbravador..."
-                            onkeydown="if(event.key === 'Enter') adicionarDesbravador()"
-                            class="flex-1 bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-3 font-medium transition uppercase">
-                        <button onclick="adicionarDesbravador()" class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-3 px-6 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow shrink-0">
+                            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarDesbravador(); }"
+                            class="flex-1 bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-3 font-medium transition uppercase">
+                        <button type="button" onclick="adicionarDesbravador()"
+                            class="w-full sm:w-auto bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-3 px-6 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm shrink-0">
                             <i class="fa-solid fa-plus"></i>
                             Adicionar Desbravador
                         </button>
@@ -183,10 +167,14 @@
             <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-center sm:text-left">
                     <h3 class="text-lg font-bold text-gray-900">Finalizar Chamada</h3>
-                    <p class="text-sm text-gray-500">Exporte os dados preenchidos acima para um documento PDF organizado.</p>
+                    <p class="text-sm text-gray-500">Clique novamente em "Sim" ou "Não" para desmarcar, ou gere o PDF abaixo.</p>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                    <button onclick="limparTudoChamada()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
+                    </button>
                     <button onclick="gerarPDF()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
                         <i class="fa-solid fa-file-pdf text-xl"></i>
                         Gerar Relatório em PDF
@@ -228,8 +216,8 @@
                 
                 <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
                     <button onclick="limparCargos()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-rotate-left"></i>
-                        Resetar Cargos
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
                     </button>
                     <button onclick="gerarPDFCargos()" class="w-full sm:w-auto bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base border border-green-500">
                         <i class="fa-solid fa-file-pdf text-xl text-green-400"></i>
@@ -249,7 +237,7 @@
                             <i class="fa-solid fa-campground text-green-600"></i>
                             Cantinho da Unidade
                         </h2>
-                        <p class="text-sm text-gray-600 mt-1">Registre as anotações e selecione as atividades desenvolvidas durante o cantinho.</p>
+                        <p class="text-sm text-gray-600 mt-1">Registre as anotações e marque as atividades realizadas durante o cantinho.</p>
                     </div>
                     <div class="bg-green-50 border border-green-200 px-4 py-2.5 rounded-xl text-center">
                         <span class="block text-xs font-bold text-green-800 uppercase">Atividades Marcadas</span>
@@ -266,7 +254,7 @@
                         <i class="fa-solid fa-pen-to-square text-green-600 mr-1.5"></i> Anotações
                     </label>
                     <textarea id="anotacoes-cantinho" rows="5"
-                        placeholder="Digite aqui tudo o que aconteceu durante o Cantinho da Unidade..."
+                        placeholder="Digite aqui o que aconteceu durante o Cantinho da Unidade..."
                         class="w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-4 transition resize-y"></textarea>
 
                     <!-- Anexo de Imagem nas Anotações -->
@@ -302,67 +290,76 @@
                     <h3 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-3">
                         <i class="fa-solid fa-list-check text-green-600 mr-1.5"></i> Selecione
                     </h3>
+
                     <div id="lista-atividades-cantinho" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <!-- Opções inseridas via JavaScript -->
+                        <!-- As opções selecionáveis serão inseridas via JavaScript -->
                     </div>
 
-                    <!-- Painel Extra: Especialidades (Múltipla Seleção Opcional) -->
-                    <div id="painel-especialidades" class="hidden mt-4 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
-                        <div class="flex items-center justify-between gap-2">
+                    <!-- Painel Dinâmico: Especialidades (Múltipla Escolha - Opcional) -->
+                    <div id="painel-especialidades" class="hidden mt-4 p-4 sm:p-5 rounded-xl bg-green-50/80 border-2 border-green-500/40 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
                             <span class="text-sm font-extrabold text-neutral-950 flex items-center gap-2">
                                 <i class="fa-solid fa-award text-green-600"></i>
-                                Especialidades Realizadas (Opcional)
+                                Especialidades Trabalhadas (Opcional - Pode escolher mais de uma)
                             </span>
-                            <span class="text-xs font-semibold text-green-800">Marque uma ou mais</span>
+                            <span id="contador-esp-selecionadas" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-600 text-white">
+                                0 selecionadas
+                            </span>
                         </div>
 
-                        <!-- Lista de Especialidades Cadastradas -->
-                        <div id="lista-especialidades-opcoes" class="space-y-2">
-                            <!-- Inserido via JavaScript -->
+                        <div id="lista-especialidades-checkboxes" class="space-y-2">
+                            <!-- Checkboxes das especialidades adicionadas via JS -->
                         </div>
 
-                        <!-- Adicionar Nova Especialidade -->
-                        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-green-200">
-                            <input type="text" id="input-nova-especialidade" placeholder="Nome da especialidade (ex: Ordem Unida)..."
-                                onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('especialidade'); }"
-                                class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium transition">
-                            <button type="button" onclick="adicionarItemCantinho('especialidade')"
-                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
-                                <i class="fa-solid fa-plus"></i> Adicionar
-                            </button>
+                        <div class="pt-2 border-t border-green-200/80">
+                            <label for="input-nova-especialidade" class="block text-xs font-bold text-gray-600 uppercase mb-1.5">
+                                Adicionar Especialidade
+                            </label>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="input-nova-especialidade" placeholder="Digite o nome da especialidade..."
+                                    onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('especialidade'); }"
+                                    class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium">
+                                <button type="button" onclick="adicionarItemCantinho('especialidade')"
+                                    class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                    <i class="fa-solid fa-plus"></i> Adicionar
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Painel Extra: Clube de Leitura (Opcional) -->
-                    <div id="painel-leitura" class="hidden mt-4 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
-                        <div class="flex items-center justify-between gap-2">
+                    <!-- Painel Dinâmico: Clube de Leitura (Opcional) -->
+                    <div id="painel-leitura" class="hidden mt-4 p-4 sm:p-5 rounded-xl bg-green-50/80 border-2 border-green-500/40 space-y-3">
+                        <div class="flex items-center justify-between">
                             <span class="text-sm font-extrabold text-neutral-950 flex items-center gap-2">
                                 <i class="fa-solid fa-book-open text-green-600"></i>
                                 Livro do Clube de Leitura (Opcional)
                             </span>
                         </div>
 
-                        <!-- Seleção e Remoção de Livro -->
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <select id="select-livro"
-                                class="flex-1 bg-white border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 transition cursor-pointer">
-                                <option value="">Nenhum livro cadastrado (opcional)...</option>
+                                class="flex-1 bg-white border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 cursor-pointer">
+                                <option value="">Nenhum livro cadastrado ainda</option>
                             </select>
-                            <button type="button" onclick="abrirModalRemoverItemCantinho('livro')" title="Remover livro selecionado"
-                                class="w-10 h-10 rounded-xl bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 flex items-center justify-center transition shrink-0">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            <button type="button" id="btn-remover-livro" onclick="abrirModalRemoverItemCantinho('livro')"
+                                class="hidden px-4 py-2.5 rounded-xl bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/40 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-trash-can"></i> Remover
                             </button>
                         </div>
 
-                        <!-- Adicionar Novo Livro -->
-                        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-green-200">
-                            <input type="text" id="input-novo-livro" placeholder="Título do livro (ex: Vaso de Barro)..."
-                                onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('livro'); }"
-                                class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium transition">
-                            <button type="button" onclick="adicionarItemCantinho('livro')"
-                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
-                                <i class="fa-solid fa-plus"></i> Adicionar
-                            </button>
+                        <div class="pt-2 border-t border-green-200/80">
+                            <label for="input-novo-livro" class="block text-xs font-bold text-gray-600 uppercase mb-1.5">
+                                Adicionar Novo Livro
+                            </label>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="text" id="input-novo-livro" placeholder="Digite o título do livro..."
+                                    onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('livro'); }"
+                                    class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium">
+                                <button type="button" onclick="adicionarItemCantinho('livro')"
+                                    class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                    <i class="fa-solid fa-plus"></i> Adicionar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,11 +369,122 @@
             <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-center sm:text-left">
                     <h3 class="text-lg font-bold text-gray-900">Exportar Cantinho da Unidade</h3>
-                    <p class="text-sm text-gray-500">Gere um relatório em PDF com as anotações e atividades realizadas.</p>
+                    <p class="text-sm text-gray-500">Gere um relatório em PDF com as anotações e as atividades selecionadas.</p>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                    <button onclick="limparTudoCantinho()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
+                    </button>
                     <button onclick="gerarPDFCantinho()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
+                        <i class="fa-solid fa-file-pdf text-xl"></i>
+                        Gerar Relatório em PDF
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== ABA 4: SECRETÁRIO(A) ==================== -->
+        <div id="conteudo-secretario" class="hidden">
+            <!-- Cabeçalho da Aba Secretário(a) -->
+            <section class="bg-white rounded-2xl shadow-md p-6 mb-8 border border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-neutral-950 flex items-center gap-2">
+                            <i class="fa-solid fa-file-signature text-green-600"></i>
+                            Secretário(a) da Unidade
+                        </h2>
+                        <p class="text-sm text-gray-600 mt-1">Registre atas, anotações, fotos e eventos administrativos da unidade.</p>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 px-4 py-2.5 rounded-xl text-center">
+                        <span class="block text-xs font-bold text-green-800 uppercase">Opções Marcadas</span>
+                        <span id="contador-secretario" class="text-xl font-extrabold text-neutral-950">0/2</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Espaço de Anotações, Anexo de Imagem e Seleção de Ocorrências -->
+            <section class="bg-white rounded-2xl shadow-md p-6 border border-gray-200 space-y-6">
+                <!-- Campo Anotações -->
+                <div>
+                    <label for="anotacoes-secretario" class="block text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-pen-to-square text-green-600 mr-1.5"></i> Anotações
+                    </label>
+                    <textarea id="anotacoes-secretario" rows="5"
+                        placeholder="Digite aqui as anotações, atas ou observações da secretaria..."
+                        class="w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-4 transition resize-y"></textarea>
+
+                    <!-- Anexo de Imagem nas Anotações -->
+                    <div class="mt-3 flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <label for="input-imagem-secretario"
+                                class="cursor-pointer inline-flex items-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition shadow-xs select-none">
+                                <i class="fa-solid fa-image"></i>
+                                <span id="label-btn-imagem-secretario">Anexar Imagem</span>
+                            </label>
+                            <input type="file" id="input-imagem-secretario" accept="image/*" onchange="aoSelecionarImagemSecretario(event)" class="hidden">
+                            <span id="nome-arquivo-imagem-secretario" class="text-xs text-gray-500 font-medium">Nenhuma imagem anexada (opcional)</span>
+                        </div>
+
+                        <!-- Pré-visualização da Imagem Anexada -->
+                        <div id="preview-imagem-secretario-container" class="hidden relative w-full sm:max-w-md bg-gray-50 border-2 border-green-500/40 rounded-xl p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-green-800 uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-paperclip"></i> Registro Fotográfico Anexado
+                                </span>
+                                <button type="button" onclick="removerImagemSecretario()"
+                                    class="px-2.5 py-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> Remover
+                                </button>
+                            </div>
+                            <img id="preview-imagem-secretario" src="" alt="Pré-visualização da imagem anexada" class="w-full max-h-64 object-contain rounded-lg bg-white border border-gray-200">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção Selecione -->
+                <div class="pt-4 border-t border-gray-100">
+                    <h3 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-list-check text-green-600 mr-1.5"></i> Selecione
+                    </h3>
+
+                    <!-- Lista de Opções (Padrão + Adicionadas) -->
+                    <div id="lista-opcoes-secretario" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Opções inseridas via JavaScript -->
+                    </div>
+
+                    <!-- Adicionar Nova Opção no Selecione -->
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <label for="input-nova-opcao-secretario" class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">
+                            <i class="fa-solid fa-plus-circle text-green-600 mr-1"></i> Adicionar Outra Opção (Opcional)
+                        </label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="input-nova-opcao-secretario" placeholder="Digite outra reunião ou ocorrência (ex: Visita aos Pais)..."
+                                onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarOpcaoSecretario(); }"
+                                class="flex-1 bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-3 font-medium transition">
+                            <button type="button" onclick="adicionarOpcaoSecretario()"
+                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-3 px-5 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Botão de Gerar Relatório em PDF no fim da Aba 4 -->
+            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-center sm:text-left">
+                    <h3 class="text-lg font-bold text-gray-900">Exportar Relatório do Secretário(a)</h3>
+                    <p class="text-sm text-gray-500">Gere um relatório em PDF com as anotações, imagem e opções selecionadas.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                    <button onclick="limparTudoSecretario()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
+                    </button>
+                    <button onclick="gerarPDFSecretario()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
                         <i class="fa-solid fa-file-pdf text-xl"></i>
                         Gerar Relatório em PDF
                     </button>
@@ -386,33 +494,28 @@
 
     </main>
 
-    <!-- Notificação Toast (Substituto elegante para alert()) -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-neutral-950 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border-l-4 border-green-500">
-        <i id="toast-icon" class="fa-solid fa-circle-info text-green-400 text-xl"></i>
-        <span id="toast-msg" class="font-medium text-sm">Mensagem</span>
-    </div>
-
-    <!-- Modal de Confirmação de Remoção (Substituto seguro para confirm()) -->
-    <div id="modal-remover" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border-2 border-neutral-900 overflow-hidden animate-fade-in">
+    <!-- Modal de Confirmação para Remover Desbravador -->
+    <div id="modal-remover" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-600 overflow-hidden">
             <div class="bg-neutral-950 px-6 py-4 border-b-2 border-red-600 flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-red-600/20 border border-red-500 flex items-center justify-center text-red-500 shrink-0">
-                    <i class="fa-solid fa-trash-can"></i>
+                <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500 text-red-500 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                 </div>
-                <h3 class="text-white font-extrabold text-sm sm:text-base tracking-wide uppercase">
+                <h3 class="text-white font-extrabold text-base sm:text-lg tracking-wide">
                     REMOVER DESBRAVADOR DA LISTA - CONFIRMAR
                 </h3>
             </div>
             <div class="p-6">
-                <p class="text-gray-700 text-sm sm:text-base">
-                    Deseja realmente remover <strong id="modal-remover-nome" class="text-neutral-950"></strong> da lista de chamada e da aba de cargos?
-                </p>
-                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-3">
-                    <button onclick="fecharModalRemover()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold text-sm hover:bg-gray-100 transition">
+                <p class="text-sm text-gray-600">Você está prestes a remover o desbravador abaixo da chamada e da lista de cargos:</p>
+                <p id="modal-remover-nome" class="mt-3 p-3 rounded-xl bg-red-50 border border-red-200 text-neutral-950 font-extrabold text-center text-sm sm:text-base"></p>
+                <div class="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                    <button type="button" onclick="fecharModalRemover()"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition">
                         Cancelar
                     </button>
-                    <button onclick="confirmarRemocaoDesbravador()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-check"></i>
+                    <button type="button" onclick="confirmarRemocaoDesbravador()"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i>
                         Confirmar Remoção
                     </button>
                 </div>
@@ -420,32 +523,39 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Remoção de Especialidade / Livro -->
-    <div id="modal-remover-cantinho" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border-2 border-neutral-900 overflow-hidden">
+    <!-- Modal de Confirmação para Remover Especialidade / Livro / Opção -->
+    <div id="modal-remover-cantinho" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-600 overflow-hidden">
             <div class="bg-neutral-950 px-6 py-4 border-b-2 border-red-600 flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-red-600/20 border border-red-500 flex items-center justify-center text-red-500 shrink-0">
-                    <i class="fa-solid fa-trash-can"></i>
+                <div class="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500 text-red-500 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                 </div>
-                <h3 id="modal-cantinho-titulo" class="text-white font-extrabold text-sm sm:text-base tracking-wide uppercase">
-                    CONFIRMAR REMOÇÃO
+                <h3 id="modal-cantinho-titulo" class="text-white font-extrabold text-base sm:text-lg tracking-wide">
+                    REMOVER ITEM - CONFIRMAR
                 </h3>
             </div>
             <div class="p-6">
-                <p class="text-gray-700 text-sm sm:text-base">
-                    Deseja realmente remover <strong id="modal-cantinho-nome" class="text-neutral-950"></strong> da lista?
-                </p>
-                <div class="mt-6 flex flex-col sm:flex-row justify-end gap-3">
-                    <button type="button" onclick="fecharModalRemoverItemCantinho()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold text-sm hover:bg-gray-100 transition">
+                <p class="text-sm text-gray-600">Tem certeza que deseja remover o item abaixo da lista?</p>
+                <p id="modal-cantinho-nome" class="mt-3 p-3 rounded-xl bg-red-50 border border-red-200 text-neutral-950 font-extrabold text-center text-sm sm:text-base"></p>
+                <div class="mt-6 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                    <button type="button" onclick="fecharModalRemoverItemCantinho()"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition">
                         Cancelar
                     </button>
-                    <button type="button" onclick="confirmarRemocaoItemCantinho()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-check"></i>
+                    <button type="button" onclick="confirmarRemocaoItemCantinho()"
+                        class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i>
                         Confirmar Remoção
                     </button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Notificação Toast (Substituto elegante para alert()) -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-neutral-950 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 border-l-4 border-green-500">
+        <i id="toast-icon" class="fa-solid fa-circle-info text-green-400 text-xl"></i>
+        <span id="toast-msg" class="font-medium text-sm">Mensagem</span>
     </div>
 
     <script>
@@ -485,26 +595,32 @@
             "Capelão"
         ];
 
-        // Atividades do Cantinho da Unidade
+        // Atividades disponíveis no Cantinho da Unidade
         const atividadesCantinho = [
             { id: "meditacao", label: "Meditação espiritual", icon: "fa-hands-praying" },
             { id: "leitura", label: "Clube de leitura", icon: "fa-book-open" },
             { id: "recreacao", label: "Atividades interativas e recreação", icon: "fa-puzzle-piece" },
             { id: "especialidades", label: "Especialidades", icon: "fa-award" },
             { id: "social", label: "Planejamento social", icon: "fa-people-group" },
-            { id: "requisitos", label: "Acompanhamento de requisitos", icon: "fa-clipboard-list" }
+            { id: "requisitos", label: "Acompanhamento de requisitos", icon: "fa-list-check" }
         ];
 
-        // Listas dinâmicas para Especialidades e Livros do Clube de Leitura (iniciam vazias para o usuário adicionar ou selecionar)
+        // Listas dinâmicas para Especialidades e Livros do Clube de Leitura
         let listaEspecialidades = [];
         let especialidadesSelecionadas = new Set();
         let listaLivros = [];
-        let itemCantinhoParaRemover = null; // { tipo: 'especialidade' | 'livro', index: number }
+        let itemCantinhoParaRemover = null; // { tipo: 'especialidade' | 'livro' | 'secretario', index: number }
         let imagemCantinhoAnexada = null; // { dataUrl: string, formato: string, largura: number, altura: number, nome: string }
+
+        // Dados e estado da Aba 4: Secretário(a)
+        let opcoesSecretario = [
+            { id: "pais", label: "Reunião com os Pais", icon: "fa-people-roof", fixa: true, marcada: false },
+            { id: "diretoria", label: "Reunião de Diretoria", icon: "fa-user-tie", fixa: true, marcada: false }
+        ];
+        let imagemSecretarioAnexada = null; // { dataUrl: string, formato: string, largura: number, altura: number, nome: string }
 
         // Inicialização ao carregar a página
         document.addEventListener("DOMContentLoaded", () => {
-            // Definir a data de hoje como padrão no campo de data
             const hoje = new Date();
             const ano = hoje.getFullYear();
             const mes = String(hoje.getMonth() + 1).padStart(2, '0');
@@ -514,25 +630,30 @@
             renderizarLista();
             renderizarCargos();
             renderizarCantinho();
+            renderizarSecretario();
             configurarPWA();
         });
 
         // Alterna entre as abas do sistema
-        function alternarAba(aba) {
+        window.alternarAba = function(aba) {
             const conteudoChamada = document.getElementById("conteudo-chamada");
             const conteudoCargos = document.getElementById("conteudo-cargos");
             const conteudoCantinho = document.getElementById("conteudo-cantinho");
+            const conteudoSecretario = document.getElementById("conteudo-secretario");
             const tabChamada = document.getElementById("tab-chamada");
             const tabCargos = document.getElementById("tab-cargos");
             const tabCantinho = document.getElementById("tab-cantinho");
+            const tabSecretario = document.getElementById("tab-secretario");
             const btnMarcarTodos = document.getElementById("btn-marcar-todos");
 
             conteudoChamada.classList.add("hidden");
             conteudoCargos.classList.add("hidden");
             conteudoCantinho.classList.add("hidden");
+            conteudoSecretario.classList.add("hidden");
             tabChamada.classList.remove("active");
             tabCargos.classList.remove("active");
             tabCantinho.classList.remove("active");
+            tabSecretario.classList.remove("active");
 
             if (aba === "chamada") {
                 conteudoChamada.classList.remove("hidden");
@@ -546,8 +667,12 @@
                 conteudoCantinho.classList.remove("hidden");
                 tabCantinho.classList.add("active");
                 btnMarcarTodos.classList.add("hidden");
+            } else if (aba === "secretario") {
+                conteudoSecretario.classList.remove("hidden");
+                tabSecretario.classList.add("active");
+                btnMarcarTodos.classList.add("hidden");
             }
-        }
+        };
 
         // Função para mostrar mensagens amigáveis na tela
         function mostrarNotificacao(mensagem, tipo = "info") {
@@ -575,145 +700,169 @@
             }, 3500);
         }
 
+        // ==================== FUNÇÕES DA ABA 1: CHAMADA E AVALIAÇÃO ====================
+
+        // Cria o card HTML individual de um desbravador
+        function criarCardDesbravador(nome, index) {
+            const numero = index + 1;
+            const card = document.createElement("div");
+            card.className = "bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-200 overflow-hidden";
+
+            const htmlCriterios = criterios.map(crit => {
+                const isPresenca = crit.id === "presenca";
+                const colSpanClass = isPresenca ? "md:col-span-2 bg-green-50/70 border-green-200" : "bg-gray-50 border-gray-100";
+                const itemClass = isPresenca ? "" : `criterio-dependente-${index} transition-opacity duration-200`;
+
+                return `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 rounded-xl border gap-3 ${colSpanClass} ${itemClass}">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg ${isPresenca ? 'bg-neutral-900 text-green-400' : 'bg-green-100 text-green-900'} flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${crit.icon} text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-gray-800 text-sm sm:text-base">${crit.label}</span>
+                            ${isPresenca ? '<span class="block text-xs text-green-800 font-medium">Se "Não", os demais itens serão bloqueados</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 self-end sm:self-center">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="dbv_${index}_${crit.id}" value="Sim" class="sr-only radio-btn" onclick="alternarOpcaoRadio(this, ${index}, '${crit.id}', 'Sim')">
+                            <span class="label-sim inline-flex items-center justify-center px-5 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-green-500 select-none">
+                                <i class="fa-solid fa-check mr-1.5"></i> Sim
+                            </span>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="dbv_${index}_${crit.id}" value="Não" class="sr-only radio-btn" onclick="alternarOpcaoRadio(this, ${index}, '${crit.id}', 'Não')">
+                            <span class="label-nao inline-flex items-center justify-center px-5 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-red-500 select-none">
+                                <i class="fa-solid fa-xmark mr-1.5"></i> Não
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            `;
+            }).join("");
+
+            card.innerHTML = `
+                <div class="bg-gradient-to-r from-neutral-950 to-neutral-800 px-5 py-3.5 flex items-center justify-between gap-2 border-b-2 border-green-500">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-7 h-7 rounded-full bg-green-500 text-neutral-950 font-extrabold text-sm flex items-center justify-center shrink-0">
+                            ${numero}
+                        </span>
+                        <h2 class="text-white font-bold text-base sm:text-lg tracking-wide truncate">${nome}</h2>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span id="status-badge-${index}" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-neutral-900 text-neutral-300 border border-neutral-700">
+                            Pendente
+                        </span>
+                        <button type="button" onclick="abrirModalRemover(${index})" title="Remover desbravador da lista"
+                            class="w-7 h-7 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/40 flex items-center justify-center transition">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    ${htmlCriterios}
+                </div>
+            `;
+
+            return card;
+        }
+
         // Renderiza os cards de todos os desbravadores (Aba 1)
         function renderizarLista() {
             const container = document.getElementById("lista-desbravadores");
             container.innerHTML = "";
 
             desbravadores.forEach((nome, index) => {
-                const numero = index + 1;
-                const card = document.createElement("div");
-                card.className = "bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-200 overflow-hidden";
-
-                let htmlCriterios = criterios.map(crit => {
-                    const isPresenca = crit.id === "presenca";
-                    const colSpanClass = isPresenca ? "md:col-span-2 bg-green-50/70 border-green-200" : "bg-gray-50 border-gray-100";
-                    const itemClass = isPresenca ? "" : `criterio-dependente-${index} transition-opacity duration-200`;
-
-                    return `
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 rounded-xl border gap-3 ${colSpanClass} ${itemClass}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg ${isPresenca ? 'bg-neutral-900 text-green-400' : 'bg-green-100 text-green-900'} flex items-center justify-center shrink-0">
-                                <i class="fa-solid ${crit.icon} text-sm"></i>
-                            </div>
-                            <div>
-                                <span class="font-semibold text-gray-800 text-sm sm:text-base">${crit.label}</span>
-                                ${isPresenca ? '<span class="block text-xs text-green-800 font-medium">Se "Não", os demais itens serão bloqueados</span>' : ''}
-                            </div>
-                        </div>
-                        
-                        <!-- Botões Sim / Não (com suporte a clique para desmarcar) -->
-                        <div class="flex items-center gap-2 self-end sm:self-center">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="dbv_${index}_${crit.id}" value="Sim" class="sr-only radio-btn" onclick="gerenciarCliqueRadio(this, ${index}, '${crit.id}', 'Sim')">
-                                <span class="label-sim inline-flex items-center justify-center px-5 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-green-500 select-none">
-                                    <i class="fa-solid fa-check mr-1.5"></i> Sim
-                                </span>
-                            </label>
-
-                            <label class="cursor-pointer">
-                                <input type="radio" name="dbv_${index}_${crit.id}" value="Não" class="sr-only radio-btn" onclick="gerenciarCliqueRadio(this, ${index}, '${crit.id}', 'Não')">
-                                <span class="label-nao inline-flex items-center justify-center px-5 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-red-500 select-none">
-                                    <i class="fa-solid fa-xmark mr-1.5"></i> Não
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                `;
-                }).join("");
-
-                card.innerHTML = `
-                    <div class="bg-gradient-to-r from-neutral-950 to-neutral-800 px-5 py-3.5 flex items-center justify-between gap-2 border-b-2 border-green-500">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-7 h-7 rounded-full bg-green-500 text-neutral-950 font-extrabold text-sm flex items-center justify-center shrink-0">
-                                ${numero}
-                            </span>
-                            <h2 class="text-white font-bold text-base sm:text-lg tracking-wide truncate">${nome}</h2>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span id="status-badge-${index}" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-neutral-900 text-neutral-300 border border-neutral-700">
-                                Pendente
-                            </span>
-                            <button onclick="abrirModalRemover(${index})" title="Remover desbravador da lista"
-                                class="w-8 h-8 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/40 hover:border-red-500 flex items-center justify-center transition">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-                        ${htmlCriterios}
-                    </div>
-                `;
-
-                container.appendChild(card);
+                container.appendChild(criarCardDesbravador(nome, index));
             });
 
-            // Atualiza o total de desbravadores exibido no painel
-            document.getElementById("total-desbravadores").textContent = desbravadores.length;
             atualizarContadores();
         }
 
-        // Índice do desbravador aguardando confirmação de remoção
-        let indiceParaRemover = null;
+        // Adiciona um novo desbravador nas abas de Chamada e Cargos
+        function adicionarDesbravador() {
+            const input = document.getElementById("novo-desbravador-nome");
+            const nomeFormatado = input.value.trim().toUpperCase();
 
-        // Abre o modal de segunda confirmação para remover um desbravador
+            if (!nomeFormatado) {
+                mostrarNotificacao("Digite o nome do desbravador antes de adicionar.", "erro");
+                input.focus();
+                return;
+            }
+
+            if (desbravadores.includes(nomeFormatado)) {
+                mostrarNotificacao("Este desbravador já está cadastrado na lista!", "erro");
+                input.focus();
+                return;
+            }
+
+            const novoIndex = desbravadores.length;
+            desbravadores.push(nomeFormatado);
+
+            document.getElementById("lista-desbravadores").appendChild(criarCardDesbravador(nomeFormatado, novoIndex));
+            document.getElementById("lista-cargos").appendChild(criarLinhaCargo(nomeFormatado, novoIndex));
+
+            input.value = "";
+            atualizarContadores();
+            atualizarContadorCargos();
+            mostrarNotificacao(`${nomeFormatado} foi adicionado à unidade!`, "sucesso");
+        }
+
+        let indiceDesbravadorParaRemover = null;
+
+        // Abre o alerta de segunda confirmação para remover um desbravador
         function abrirModalRemover(index) {
-            indiceParaRemover = index;
-            const nome = desbravadores[index];
-            document.getElementById("modal-remover-nome").textContent = nome;
+            indiceDesbravadorParaRemover = index;
             const modal = document.getElementById("modal-remover");
+            document.getElementById("modal-remover-nome").textContent = desbravadores[index];
             modal.classList.remove("hidden");
             modal.classList.add("flex");
         }
 
-        // Fecha o modal mantendo o desbravador na lista
+        // Fecha o modal de remoção sem alterar a lista
         function fecharModalRemover() {
-            indiceParaRemover = null;
+            indiceDesbravadorParaRemover = null;
             const modal = document.getElementById("modal-remover");
             modal.classList.add("hidden");
             modal.classList.remove("flex");
         }
 
-        // Confirma a remoção, excluindo o desbravador das duas abas e mantendo os dados dos demais
+        // Remove o desbravador da Chamada e da aba de Cargos preservando os demais dados
         function confirmarRemocaoDesbravador() {
-            if (indiceParaRemover === null) return;
+            if (indiceDesbravadorParaRemover === null) return;
 
-            const indexRemovido = indiceParaRemover;
-            const nomeRemovido = desbravadores[indexRemovido];
+            const idxRemover = indiceDesbravadorParaRemover;
+            const nomeRemovido = desbravadores[idxRemover];
 
-            // 1. Salva o estado atual da Chamada (Aba 1) de todos os membros
-            const estadoChamada = desbravadores.map((_, idx) => {
+            const estadoChamadaAtual = desbravadores.map((_, idx) => {
                 const res = {};
                 criterios.forEach(crit => {
-                    const checked = document.querySelector(`input[name="dbv_${idx}_${crit.id}"]:checked`);
-                    res[crit.id] = checked ? checked.value : null;
+                    const marcado = document.querySelector(`input[name="dbv_${idx}_${crit.id}"]:checked`);
+                    res[crit.id] = marcado ? marcado.value : null;
                 });
                 return res;
             });
 
-            // 2. Salva o estado atual dos Cargos (Aba 2) de todos os membros
-            const estadoCargos = desbravadores.map((_, idx) => {
+            const estadoCargosAtual = desbravadores.map((_, idx) => {
                 const sel = document.getElementById(`cargo-dbv-${idx}`);
                 return sel ? sel.value : "Sem Cargo";
             });
 
-            // 3. Remove o desbravador selecionado dos arrays
-            desbravadores.splice(indexRemovido, 1);
-            estadoChamada.splice(indexRemovido, 1);
-            estadoCargos.splice(indexRemovido, 1);
+            desbravadores.splice(idxRemover, 1);
+            estadoChamadaAtual.splice(idxRemover, 1);
+            estadoCargosAtual.splice(idxRemover, 1);
 
-            // 4. Re-renderiza ambas as abas
             renderizarLista();
-            renderizarCargos();
-
-            // 5. Restaura o estado da Chamada dos desbravadores restantes
-            estadoChamada.forEach((res, idx) => {
+            estadoChamadaAtual.forEach((res, idx) => {
                 criterios.forEach(crit => {
                     if (res[crit.id]) {
                         const radio = document.querySelector(`input[name="dbv_${idx}_${crit.id}"][value="${res[crit.id]}"]`);
                         if (radio) {
                             radio.checked = true;
-                            radio.dataset.marcado = "true";
+                            radio.dataset.wasChecked = "true";
                         }
                     }
                 });
@@ -723,111 +872,37 @@
             });
             atualizarContadores();
 
-            // 6. Restaura o estado dos Cargos dos desbravadores restantes
-            estadoCargos.forEach((cargo, idx) => {
+            renderizarCargos();
+            estadoCargosAtual.forEach((cargo, idx) => {
                 const sel = document.getElementById(`cargo-dbv-${idx}`);
                 if (sel) sel.value = cargo;
             });
             atualizarContadorCargos();
 
             fecharModalRemover();
-            mostrarNotificacao(`${nomeRemovido} removido(a) da lista.`, "info");
+            mostrarNotificacao(`${nomeRemovido} foi removido da lista.`, "info");
         }
 
-        // Adiciona um novo desbravador preservando as seleções já feitas nas duas abas
-        function adicionarDesbravador() {
-            const input = document.getElementById("novo-desbravador-nome");
-            const novoNome = input.value.trim().toUpperCase();
+        // Permite clicar novamente no mesmo botão "Sim" ou "Não" para desmarcar de forma interativa
+        function alternarOpcaoRadio(radioEl, index, critId, valor) {
+            const jaEstavaMarcado = radioEl.dataset.wasChecked === "true";
 
-            if (!novoNome) {
-                mostrarNotificacao("Digite o nome do desbravador antes de adicionar.", "erro");
-                input.focus();
-                return;
-            }
+            const grupoRadios = document.querySelectorAll(`input[name="dbv_${index}_${critId}"]`);
+            grupoRadios.forEach(r => r.dataset.wasChecked = "false");
 
-            if (desbravadores.includes(novoNome)) {
-                mostrarNotificacao("Este desbravador já está na lista!", "erro");
-                input.focus();
-                return;
-            }
-
-            // 1. Salva o estado atual da Chamada (Aba 1)
-            const estadoChamada = desbravadores.map((_, idx) => {
-                const res = {};
-                criterios.forEach(crit => {
-                    const checked = document.querySelector(`input[name="dbv_${idx}_${crit.id}"]:checked`);
-                    res[crit.id] = checked ? checked.value : null;
-                });
-                return res;
-            });
-
-            // 2. Salva o estado atual dos Cargos (Aba 2)
-            const estadoCargos = desbravadores.map((_, idx) => {
-                const sel = document.getElementById(`cargo-dbv-${idx}`);
-                return sel ? sel.value : "Sem Cargo";
-            });
-
-            // 3. Adiciona o novo desbravador à lista oficial
-            desbravadores.push(novoNome);
-            input.value = "";
-
-            // 4. Re-renderiza ambas as listas
-            renderizarLista();
-            renderizarCargos();
-
-            // 5. Restaura o estado da Chamada
-            estadoChamada.forEach((res, idx) => {
-                criterios.forEach(crit => {
-                    if (res[crit.id]) {
-                        const radio = document.querySelector(`input[name="dbv_${idx}_${crit.id}"][value="${res[crit.id]}"]`);
-                        if (radio) {
-                            radio.checked = true;
-                            radio.dataset.marcado = "true";
-                        }
-                    }
-                });
-                if (res.presenca === "Não") {
-                    aplicarBloqueioCriterios(idx, true);
-                }
-            });
-            atualizarContadores();
-
-            // 6. Restaura o estado dos Cargos
-            estadoCargos.forEach((cargo, idx) => {
-                const sel = document.getElementById(`cargo-dbv-${idx}`);
-                if (sel) sel.value = cargo;
-            });
-            atualizarContadorCargos();
-
-            mostrarNotificacao(`${novoNome} adicionado(a) com sucesso!`, "sucesso");
-        }
-
-        // Permite clicar novamente no botão já marcado ("Sim" ou "Não") para desmarcá-lo
-        function gerenciarCliqueRadio(radio, index, critId, valor) {
-            if (radio.dataset.marcado === "true") {
-                radio.checked = false;
-                radio.dataset.marcado = "false";
-
+            if (jaEstavaMarcado) {
+                radioEl.checked = false;
                 if (critId === "presenca") {
                     aplicarBloqueioCriterios(index, false);
                 }
-                atualizarContadores();
             } else {
-                // Limpa o estado anterior do par Sim/Não deste critério
-                const grupo = document.querySelectorAll(`input[name="dbv_${index}_${critId}"]`);
-                grupo.forEach(r => r.dataset.marcado = "false");
-                radio.dataset.marcado = "true";
-
-                aoAlterarOpcao(index, critId, valor);
+                radioEl.checked = true;
+                radioEl.dataset.wasChecked = "true";
+                if (critId === "presenca") {
+                    aplicarBloqueioCriterios(index, valor === "Não");
+                }
             }
-        }
 
-        // Controla o bloqueio/desbloqueio dos critérios quando "Presença" é alterada
-        function aoAlterarOpcao(index, critId, valor) {
-            if (critId === "presenca") {
-                const bloquear = (valor === "Não");
-                aplicarBloqueioCriterios(index, bloquear);
-            }
             atualizarContadores();
         }
 
@@ -841,8 +916,8 @@
                     inputs.forEach(input => {
                         input.disabled = bloquear;
                         if (bloquear) {
-                            input.checked = false; // Limpa marcação anterior caso mude para "Não"
-                            input.dataset.marcado = "false";
+                            input.checked = false;
+                            input.dataset.wasChecked = "false";
                         }
                     });
                 }
@@ -857,15 +932,15 @@
             });
         }
 
-        // Atualiza a contagem de desbravadores totalmente avaliados
+        // Atualiza a contagem total e de desbravadores totalmente avaliados
         function atualizarContadores() {
             let avaliadosCompletos = 0;
 
             desbravadores.forEach((_, index) => {
                 const presencaEl = document.querySelector(`input[name="dbv_${index}_presenca"]:checked`);
                 const badge = document.getElementById(`status-badge-${index}`);
+                if (!badge) return;
 
-                // Se marcou Presença = Não, já está concluído como Faltou
                 if (presencaEl && presencaEl.value === "Não") {
                     avaliadosCompletos++;
                     badge.textContent = "Faltou";
@@ -892,6 +967,7 @@
                 }
             });
 
+            document.getElementById("total-desbravadores").textContent = desbravadores.length;
             document.getElementById("total-avaliados").textContent = `${avaliadosCompletos}/${desbravadores.length}`;
         }
 
@@ -900,16 +976,29 @@
             desbravadores.forEach((_, index) => {
                 aplicarBloqueioCriterios(index, false);
             });
-            const todosRadios = document.querySelectorAll('input[type="radio"]');
-            todosRadios.forEach(r => r.dataset.marcado = "false");
-
+            document.querySelectorAll('input[type="radio"]').forEach(r => {
+                r.dataset.wasChecked = "false";
+            });
             const radiosSim = document.querySelectorAll('input[type="radio"][value="Sim"]');
             radiosSim.forEach(radio => {
                 radio.checked = true;
-                radio.dataset.marcado = "true";
+                radio.dataset.wasChecked = "true";
             });
             atualizarContadores();
             mostrarNotificacao("Todos os critérios foram marcados como 'Sim'!", "sucesso");
+        }
+
+        // Desmarca todas as opções marcadas na aba de Chamada e Avaliação
+        function limparTudoChamada() {
+            desbravadores.forEach((_, index) => {
+                aplicarBloqueioCriterios(index, false);
+            });
+            document.querySelectorAll('#lista-desbravadores input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+                radio.dataset.wasChecked = "false";
+            });
+            atualizarContadores();
+            mostrarNotificacao("Todas as marcações da chamada foram desmarcadas!", "info");
         }
 
         // Gera e baixa o arquivo PDF com os resultados da Chamada
@@ -922,7 +1011,6 @@
                 return;
             }
 
-            // Formatar data de YYYY-MM-DD para DD/MM/YYYY
             const [ano, mes, dia] = dataInput.split("-");
             const dataFormatada = `${dia}/${mes}/${ano}`;
 
@@ -930,12 +1018,10 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Cabeçalho do PDF (Preto e Verde)
-                doc.setFillColor(10, 10, 10); // Preto (neutral-950)
+                doc.setFillColor(10, 10, 10);
                 doc.rect(0, 0, 210, 32, 'F');
 
-                // Faixa verde decorativa
-                doc.setFillColor(34, 197, 94); // Verde (green-500)
+                doc.setFillColor(34, 197, 94);
                 doc.rect(0, 32, 210, 2.5, 'F');
 
                 doc.setTextColor(255, 255, 255);
@@ -945,10 +1031,9 @@
 
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(11);
-                doc.setTextColor(134, 239, 172); // Verde claro (green-300)
+                doc.setTextColor(134, 239, 172);
                 doc.text(`Data da Reunião: ${dataFormatada}`, 14, 24);
 
-                // Preparar dados para a tabela (agora com Presença e Pontualidade separadas)
                 const colunas = [
                     "Nº",
                     "Nome do Desbravador",
@@ -980,14 +1065,13 @@
                     ];
                 });
 
-                // Gerar tabela estilizada no PDF
                 doc.autoTable({
                     startY: 42,
                     head: [colunas],
                     body: linhas,
                     theme: 'grid',
                     headStyles: {
-                        fillColor: [23, 23, 23], // neutral-900
+                        fillColor: [23, 23, 23],
                         textColor: [255, 255, 255],
                         fontStyle: 'bold',
                         halign: 'center',
@@ -1007,7 +1091,6 @@
                         cellPadding: 3.5,
                         valign: 'middle'
                     },
-                    // Colorir células de "Sim" (verde), "Não" (vermelho) e "Bloq." (cinza)
                     didParseCell: function(data) {
                         if (data.section === 'body' && data.column.index >= 2) {
                             if (data.cell.raw === 'Sim') {
@@ -1024,14 +1107,16 @@
                     }
                 });
 
-                // Rodapé do PDF
-                const finalY = doc.lastAutoTable.finalY || 180;
+                let finalY = doc.lastAutoTable.finalY || 180;
+                if (finalY + 38 > 285) {
+                    doc.addPage();
+                    finalY = 10;
+                }
                 doc.setFontSize(9);
                 doc.setTextColor(100, 116, 139);
                 doc.text("Assinatura do Conselheiro(a): ____________________________________", 14, finalY + 20);
                 doc.text("Assinatura do Diretor(a): ________________________________________", 14, finalY + 34);
 
-                // Salvar o arquivo
                 doc.save(`Relatorio_Chamada_Unidade_Eliseu_${dia}-${mes}-${ano}.pdf`);
                 mostrarNotificacao("Relatório PDF da chamada gerado com sucesso!", "sucesso");
 
@@ -1043,43 +1128,45 @@
 
         // ==================== FUNÇÕES DA ABA 2: CARGOS DA UNIDADE ====================
 
-        // Renderiza a lista de desbravadores com o seletor de cargos ao lado
+        function criarLinhaCargo(nome, index) {
+            const numero = index + 1;
+            const row = document.createElement("div");
+            row.className = "p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-green-50/40 transition";
+
+            const opcoesHTML = cargosUnidade.map(cargo => 
+                `<option value="${cargo}">${cargo}</option>`
+            ).join("");
+
+            row.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-neutral-900 text-green-400 font-extrabold text-xs flex items-center justify-center shrink-0">
+                        ${numero}
+                    </span>
+                    <span class="font-bold text-gray-800 text-sm sm:text-base">${nome}</span>
+                </div>
+
+                <div class="w-full sm:w-64">
+                    <select id="cargo-dbv-${index}" onchange="atualizarContadorCargos()" 
+                        class="w-full bg-gray-50 border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 transition cursor-pointer">
+                        ${opcoesHTML}
+                    </select>
+                </div>
+            `;
+
+            return row;
+        }
+
         function renderizarCargos() {
             const container = document.getElementById("lista-cargos");
             container.innerHTML = "";
 
             desbravadores.forEach((nome, index) => {
-                const numero = index + 1;
-                const row = document.createElement("div");
-                row.className = "p-4 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-green-50/40 transition";
-
-                const opcoesHTML = cargosUnidade.map(cargo => 
-                    `<option value="${cargo}">${cargo}</option>`
-                ).join("");
-
-                row.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="w-7 h-7 rounded-full bg-neutral-900 text-green-400 font-extrabold text-xs flex items-center justify-center shrink-0">
-                            ${numero}
-                        </span>
-                        <span class="font-bold text-gray-800 text-sm sm:text-base">${nome}</span>
-                    </div>
-
-                    <div class="w-full sm:w-64">
-                        <select id="cargo-dbv-${index}" onchange="atualizarContadorCargos()" 
-                            class="w-full bg-gray-50 border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 transition cursor-pointer">
-                            ${opcoesHTML}
-                        </select>
-                    </div>
-                `;
-
-                container.appendChild(row);
+                container.appendChild(criarLinhaCargo(nome, index));
             });
 
             atualizarContadorCargos();
         }
 
-        // Atualiza o contador de desbravadores com cargo diferente de "Sem Cargo"
         function atualizarContadorCargos() {
             let comCargo = 0;
             desbravadores.forEach((_, index) => {
@@ -1096,23 +1183,20 @@
             document.getElementById("contador-cargos").textContent = `${comCargo}/${desbravadores.length}`;
         }
 
-        // Reseta todos os cargos para "Sem Cargo"
         function limparCargos() {
             desbravadores.forEach((_, index) => {
                 const select = document.getElementById(`cargo-dbv-${index}`);
                 if (select) select.value = "Sem Cargo";
             });
             atualizarContadorCargos();
-            mostrarNotificacao("Todos os cargos foram resetados para 'Sem Cargo'.");
+            mostrarNotificacao("Todos os cargos foram desmarcados e voltaram para 'Sem Cargo'.", "info");
         }
 
-        // Gera relatório em PDF dos Cargos da Unidade
         function gerarPDFCargos() {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Cabeçalho do PDF (Preto e Verde)
                 doc.setFillColor(10, 10, 10);
                 doc.rect(0, 0, 210, 32, 'F');
 
@@ -1172,7 +1256,11 @@
                     }
                 });
 
-                const finalY = doc.lastAutoTable.finalY || 180;
+                let finalY = doc.lastAutoTable.finalY || 180;
+                if (finalY + 38 > 285) {
+                    doc.addPage();
+                    finalY = 10;
+                }
                 doc.setFontSize(9);
                 doc.setTextColor(100, 116, 139);
                 doc.text("Assinatura do Conselheiro(a): ____________________________________", 14, finalY + 20);
@@ -1189,107 +1277,116 @@
 
         // ==================== FUNÇÕES DA ABA 3: CANTINHO DA UNIDADE ====================
 
-        // Renderiza as opções selecionáveis do Cantinho da Unidade
         function renderizarCantinho() {
             const container = document.getElementById("lista-atividades-cantinho");
+            if (!container) return;
             container.innerHTML = "";
 
             atividadesCantinho.forEach(item => {
                 const label = document.createElement("label");
-                label.id = `card-cantinho-${item.id}`;
                 label.className = "cursor-pointer flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 bg-gray-50 hover:border-green-500 transition select-none";
+                label.id = `card-cantinho-${item.id}`;
 
                 label.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div id="icon-cantinho-${item.id}" class="w-9 h-9 rounded-lg bg-neutral-900 text-green-400 flex items-center justify-center shrink-0 transition">
+                        <div id="icon-box-cantinho-${item.id}" class="w-9 h-9 rounded-lg bg-neutral-900 text-green-400 flex items-center justify-center shrink-0 transition">
                             <i class="fa-solid ${item.icon} text-sm"></i>
                         </div>
                         <span class="font-bold text-gray-800 text-sm sm:text-base">${item.label}</span>
                     </div>
-                    <input type="checkbox" id="chk-cantinho-${item.id}" value="${item.label}" onchange="atualizarContadorCantinho()"
-                        class="w-5 h-5 accent-green-600 rounded cursor-pointer">
+                    <input type="checkbox" id="chk-cantinho-${item.id}" value="${item.label}"
+                        onchange="aoAlterarCheckboxCantinho('${item.id}', this.checked)"
+                        class="w-5 h-5 accent-green-600 rounded cursor-pointer shrink-0">
                 `;
 
                 container.appendChild(label);
             });
 
-            atualizarContadorCantinho();
-            renderizarListaEspecialidades();
+            renderizarOpcoesSelectCantinho("especialidade");
             renderizarOpcoesSelectCantinho("livro");
+            atualizarContadorCantinho();
         }
 
-        // Atualiza o visual, exibe painéis extras e atualiza contador de atividades selecionadas no Cantinho
-        function atualizarContadorCantinho() {
-            let selecionadas = 0;
+        function aoAlterarCheckboxCantinho(id, checked) {
+            atualizarContadorCantinho();
 
-            atividadesCantinho.forEach(item => {
-                const chk = document.getElementById(`chk-cantinho-${item.id}`);
-                const card = document.getElementById(`card-cantinho-${item.id}`);
-                const iconBox = document.getElementById(`icon-cantinho-${item.id}`);
-
-                if (chk && chk.checked) {
-                    selecionadas++;
-                    card.classList.add("border-green-600", "bg-green-50");
-                    card.classList.remove("border-gray-200", "bg-gray-50");
-                    iconBox.classList.add("bg-green-600", "text-white");
-                    iconBox.classList.remove("bg-neutral-900", "text-green-400");
-                } else if (card) {
-                    card.classList.remove("border-green-600", "bg-green-50");
-                    card.classList.add("border-gray-200", "bg-gray-50");
-                    iconBox.classList.remove("bg-green-600", "text-white");
-                    iconBox.classList.add("bg-neutral-900", "text-green-400");
+            if (id === "especialidades") {
+                const painel = document.getElementById("painel-especialidades");
+                if (checked) {
+                    painel.classList.remove("hidden");
+                } else {
+                    painel.classList.add("hidden");
                 }
-            });
-
-            // Mostra ou oculta o painel de Especialidades conforme seleção
-            const chkEspecialidades = document.getElementById("chk-cantinho-especialidades");
-            const painelEspecialidades = document.getElementById("painel-especialidades");
-            if (painelEspecialidades) {
-                painelEspecialidades.classList.toggle("hidden", !(chkEspecialidades && chkEspecialidades.checked));
+            } else if (id === "leitura") {
+                const painel = document.getElementById("painel-leitura");
+                if (checked) {
+                    painel.classList.remove("hidden");
+                } else {
+                    painel.classList.add("hidden");
+                }
             }
-
-            // Mostra ou oculta o painel de Clube de Leitura conforme seleção
-            const chkLeitura = document.getElementById("chk-cantinho-leitura");
-            const painelLeitura = document.getElementById("painel-leitura");
-            if (painelLeitura) {
-                painelLeitura.classList.toggle("hidden", !(chkLeitura && chkLeitura.checked));
-            }
-
-            document.getElementById("contador-cantinho").textContent = `${selecionadas}/${atividadesCantinho.length}`;
         }
 
-        // Renderiza a lista de especialidades com checkboxes individuais (múltipla escolha) e botão de remover
-        function renderizarListaEspecialidades() {
-            const container = document.getElementById("lista-especialidades-opcoes");
-            if (!container) return;
+        function renderizarOpcoesSelectCantinho(tipo) {
+            if (tipo === "especialidade") {
+                const container = document.getElementById("lista-especialidades-checkboxes");
+                const contadorEl = document.getElementById("contador-esp-selecionadas");
+                if (!container) return;
 
-            if (listaEspecialidades.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhuma especialidade cadastrada. Adicione abaixo se desejar (opcional).</p>`;
+                especialidadesSelecionadas.forEach(nome => {
+                    if (!listaEspecialidades.includes(nome)) {
+                        especialidadesSelecionadas.delete(nome);
+                    }
+                });
+
+                if (contadorEl) {
+                    const qtd = especialidadesSelecionadas.size;
+                    contadorEl.textContent = qtd === 1 ? "1 selecionada" : `${qtd} selecionadas`;
+                }
+
+                if (listaEspecialidades.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-gray-500 italic py-1">Nenhuma especialidade cadastrada ainda (opcional).</p>`;
+                    return;
+                }
+
+                container.innerHTML = listaEspecialidades.map((nome, idx) => {
+                    const marcada = especialidadesSelecionadas.has(nome);
+                    return `
+                        <div class="flex items-center justify-between gap-2 bg-white border ${marcada ? 'border-green-600 bg-green-50/40' : 'border-gray-200'} rounded-xl px-3.5 py-2.5 transition">
+                            <label class="flex items-center gap-2.5 flex-1 cursor-pointer select-none min-w-0">
+                                <input type="checkbox" ${marcada ? "checked" : ""} onchange="alternarEspecialidadeSelecionada(${idx}, this.checked)"
+                                    class="w-4 h-4 accent-green-600 rounded cursor-pointer shrink-0">
+                                <span class="text-sm font-semibold text-gray-800 truncate">${nome}</span>
+                            </label>
+                            <button type="button" onclick="abrirModalRemoverItemCantinho('especialidade', ${idx})" title="Remover especialidade"
+                                class="w-8 h-8 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 flex items-center justify-center transition shrink-0">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join("");
                 return;
             }
 
-            container.innerHTML = "";
-            listaEspecialidades.forEach((nome, index) => {
-                const marcada = especialidadesSelecionadas.has(nome);
-                const row = document.createElement("div");
-                row.className = `flex items-center justify-between gap-2 p-2.5 sm:px-3.5 rounded-xl border-2 transition ${marcada ? "bg-white border-green-600 shadow-xs" : "bg-white/80 border-gray-200 hover:border-green-400"}`;
+            const select = document.getElementById("select-livro");
+            const btnRemover = document.getElementById("btn-remover-livro");
+            if (!select) return;
 
-                row.innerHTML = `
-                    <label class="flex items-center gap-3 flex-1 cursor-pointer select-none min-w-0">
-                        <input type="checkbox" ${marcada ? "checked" : ""} onchange="alternarEspecialidadeSelecionada(${index}, this.checked)"
-                            class="w-4 h-4 accent-green-600 rounded cursor-pointer shrink-0">
-                        <span class="text-sm font-semibold text-gray-800 truncate">${nome}</span>
-                    </label>
-                    <button type="button" onclick="abrirModalRemoverEspecialidadeIndex(${index})" title="Remover especialidade"
-                        class="w-8 h-8 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 flex items-center justify-center transition shrink-0">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                `;
-                container.appendChild(row);
-            });
+            const valorAnterior = select.value;
+
+            if (listaLivros.length === 0) {
+                select.innerHTML = `<option value="">Nenhum livro cadastrado ainda</option>`;
+                if (btnRemover) btnRemover.classList.add("hidden");
+            } else {
+                select.innerHTML = `<option value="">-- Nenhum livro específico selecionado --</option>` +
+                    listaLivros.map((item, idx) => `<option value="${idx}">${item}</option>`).join("");
+                if (valorAnterior !== "" && Number(valorAnterior) < listaLivros.length) {
+                    select.value = valorAnterior;
+                }
+                if (btnRemover) btnRemover.classList.remove("hidden");
+            }
         }
 
-        // Marca ou desmarca uma especialidade específica na lista de múltipla escolha
         function alternarEspecialidadeSelecionada(index, checked) {
             const nome = listaEspecialidades[index];
             if (!nome) return;
@@ -1298,106 +1395,65 @@
             } else {
                 especialidadesSelecionadas.delete(nome);
             }
-            renderizarListaEspecialidades();
+            renderizarOpcoesSelectCantinho("especialidade");
         }
 
-        // Abre o alerta de confirmação para remover uma especialidade específica pelo índice
-        function abrirModalRemoverEspecialidadeIndex(index) {
-            const nome = listaEspecialidades[index];
-            if (!nome) return;
-
-            itemCantinhoParaRemover = { tipo: "especialidade", index };
-            document.getElementById("modal-cantinho-titulo").textContent = "REMOVER ESPECIALIDADE - CONFIRMAR";
-            document.getElementById("modal-cantinho-nome").textContent = nome;
-
-            const modal = document.getElementById("modal-remover-cantinho");
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
-
-        // Atualiza o <select> de Livros
-        function renderizarOpcoesSelectCantinho(tipo, valorSelecionado = null) {
-            if (tipo === "especialidade") {
-                renderizarListaEspecialidades();
-                return;
-            }
-            const select = document.getElementById("select-livro");
-            const lista = listaLivros;
-
-            if (!select) return;
-            select.innerHTML = "";
-
-            if (lista.length === 0) {
-                const opt = document.createElement("option");
-                opt.value = "";
-                opt.textContent = "Nenhum livro cadastrado (opcional)...";
-                select.appendChild(opt);
-                return;
-            }
-
-            const placeholder = document.createElement("option");
-            placeholder.value = "";
-            placeholder.textContent = "Selecione um livro (opcional)...";
-            select.appendChild(placeholder);
-
-            lista.forEach(nome => {
-                const opt = document.createElement("option");
-                opt.value = nome;
-                opt.textContent = nome;
-                select.appendChild(opt);
-            });
-
-            if (valorSelecionado && lista.includes(valorSelecionado)) {
-                select.value = valorSelecionado;
-            }
-        }
-
-        // Adiciona uma nova Especialidade ou Livro
         function adicionarItemCantinho(tipo) {
             const isEsp = tipo === "especialidade";
             const input = document.getElementById(isEsp ? "input-nova-especialidade" : "input-novo-livro");
+            const valor = input.value.trim();
+
+            if (!valor) {
+                mostrarNotificacao(isEsp ? "Digite o nome da especialidade." : "Digite o título do livro.", "erro");
+                input.focus();
+                return;
+            }
+
             const lista = isEsp ? listaEspecialidades : listaLivros;
-            const nome = input.value.trim();
-
-            if (!nome) {
-                mostrarNotificacao(isEsp ? "Digite o nome da especialidade antes de adicionar." : "Digite o nome do livro antes de adicionar.", "erro");
-                input.focus();
-                return;
-            }
-
-            const jaExiste = lista.some(item => item.toLowerCase() === nome.toLowerCase());
+            const jaExiste = lista.some(item => item.toLowerCase() === valor.toLowerCase());
             if (jaExiste) {
-                mostrarNotificacao(isEsp ? "Esta especialidade já está cadastrada!" : "Este livro já está cadastrado!", "erro");
+                mostrarNotificacao(isEsp ? "Esta especialidade já está na lista!" : "Este livro já está na lista!", "erro");
                 input.focus();
                 return;
             }
 
-            lista.push(nome);
-            if (isEsp) {
-                especialidadesSelecionadas.add(nome);
-            }
+            lista.push(valor);
             input.value = "";
-            renderizarOpcoesSelectCantinho(tipo, nome);
-            mostrarNotificacao(isEsp ? `Especialidade "${nome}" adicionada e marcada!` : `Livro "${nome}" adicionado e selecionado!`, "sucesso");
+
+            if (isEsp) {
+                especialidadesSelecionadas.add(valor);
+                renderizarOpcoesSelectCantinho("especialidade");
+            } else {
+                renderizarOpcoesSelectCantinho("livro");
+                const select = document.getElementById("select-livro");
+                select.value = String(lista.length - 1);
+            }
+
+            mostrarNotificacao(isEsp ? `Especialidade "${valor}" adicionada e marcada!` : `Livro "${valor}" adicionado!`, "sucesso");
         }
 
-        // Abre o alerta de confirmação para remover o Livro selecionado
-        function abrirModalRemoverItemCantinho(tipo) {
-            if (tipo === "especialidade") return;
-            const select = document.getElementById("select-livro");
-            const valorAtual = select ? select.value : "";
+        function abrirModalRemoverItemCantinho(tipo, indexInformado = null) {
+            const isEsp = tipo === "especialidade";
+            const lista = isEsp ? listaEspecialidades : listaLivros;
 
-            if (!valorAtual) {
-                mostrarNotificacao("Selecione um livro na lista para remover.", "erro");
-                return;
+            if (lista.length === 0) return;
+
+            let idx = indexInformado;
+            if (idx === null) {
+                const select = document.getElementById("select-livro");
+                if (select.value === "") {
+                    mostrarNotificacao("Selecione no menu qual livro deseja remover.", "erro");
+                    return;
+                }
+                idx = Number(select.value);
             }
 
-            const index = listaLivros.indexOf(valorAtual);
-            if (index === -1) return;
+            itemCantinhoParaRemover = { tipo, index: idx };
 
-            itemCantinhoParaRemover = { tipo: "livro", index };
-            document.getElementById("modal-cantinho-titulo").textContent = "REMOVER LIVRO - CONFIRMAR";
-            document.getElementById("modal-cantinho-nome").textContent = valorAtual;
+            document.getElementById("modal-cantinho-titulo").textContent = isEsp
+                ? "REMOVER ESPECIALIDADE - CONFIRMAR"
+                : "REMOVER LIVRO - CONFIRMAR";
+            document.getElementById("modal-cantinho-nome").textContent = lista[idx];
 
             const modal = document.getElementById("modal-remover-cantinho");
             modal.classList.remove("hidden");
@@ -1415,6 +1471,18 @@
             if (!itemCantinhoParaRemover) return;
 
             const { tipo, index } = itemCantinhoParaRemover;
+
+            if (tipo === "secretario") {
+                const removido = opcoesSecretario[index];
+                if (removido && !removido.fixa) {
+                    opcoesSecretario.splice(index, 1);
+                    renderizarSecretario();
+                    mostrarNotificacao(`Opção "${removido.label}" removida.`, "info");
+                }
+                fecharModalRemoverItemCantinho();
+                return;
+            }
+
             const isEsp = tipo === "especialidade";
             const lista = isEsp ? listaEspecialidades : listaLivros;
             const removido = lista[index];
@@ -1428,7 +1496,31 @@
             mostrarNotificacao(isEsp ? `Especialidade "${removido}" removida.` : `Livro "${removido}" removido.`, "info");
         }
 
-        // Processa e redimensiona a imagem anexada nas anotações do Cantinho da Unidade
+        function atualizarContadorCantinho() {
+            let marcadas = 0;
+
+            atividadesCantinho.forEach(item => {
+                const chk = document.getElementById(`chk-cantinho-${item.id}`);
+                const card = document.getElementById(`card-cantinho-${item.id}`);
+                const iconBox = document.getElementById(`icon-box-cantinho-${item.id}`);
+
+                if (chk && chk.checked) {
+                    marcadas++;
+                    card.classList.add("border-green-600", "bg-green-50");
+                    card.classList.remove("border-gray-200", "bg-gray-50");
+                    iconBox.classList.add("bg-green-600", "text-white");
+                    iconBox.classList.remove("bg-neutral-900", "text-green-400");
+                } else if (chk) {
+                    card.classList.remove("border-green-600", "bg-green-50");
+                    card.classList.add("border-gray-200", "bg-gray-50");
+                    iconBox.classList.remove("bg-green-600", "text-white");
+                    iconBox.classList.add("bg-neutral-900", "text-green-400");
+                }
+            });
+
+            document.getElementById("contador-cantinho").textContent = `${marcadas}/${atividadesCantinho.length}`;
+        }
+
         function aoSelecionarImagemCantinho(event) {
             const arquivo = event.target.files?.[0];
             if (!arquivo) return;
@@ -1443,7 +1535,6 @@
             leitor.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // Redimensiona proporcionalmente caso seja muito grande para manter o PDF leve e nítido
                     const maxDim = 1200;
                     let largura = img.width;
                     let altura = img.height;
@@ -1487,8 +1578,7 @@
             leitor.readAsDataURL(arquivo);
         }
 
-        // Remove a imagem anexada das anotações do Cantinho da Unidade
-        function removerImagemCantinho() {
+        function removerImagemCantinho(silencioso = false) {
             imagemCantinhoAnexada = null;
             const input = document.getElementById("input-imagem-cantinho");
             if (input) input.value = "";
@@ -1496,69 +1586,69 @@
             document.getElementById("preview-imagem-cantinho-container").classList.add("hidden");
             document.getElementById("nome-arquivo-imagem-cantinho").textContent = "Nenhuma imagem anexada (opcional)";
             document.getElementById("label-btn-imagem-cantinho").textContent = "Anexar Imagem";
-            mostrarNotificacao("Imagem removida das anotações.", "info");
+            if (!silencioso) {
+                mostrarNotificacao("Imagem removida das anotações.", "info");
+            }
         }
 
-        // Desenha a imagem anexada do Cantinho da Unidade no documento PDF e retorna a nova posição Y
+        function limparTudoCantinho() {
+            const campoAnotacoes = document.getElementById("anotacoes-cantinho");
+            if (campoAnotacoes) campoAnotacoes.value = "";
+
+            atividadesCantinho.forEach(item => {
+                const chk = document.getElementById(`chk-cantinho-${item.id}`);
+                if (chk) chk.checked = false;
+            });
+
+            especialidadesSelecionadas.clear();
+            renderizarOpcoesSelectCantinho("especialidade");
+
+            const selectLivro = document.getElementById("select-livro");
+            if (selectLivro) selectLivro.value = "";
+
+            document.getElementById("painel-especialidades")?.classList.add("hidden");
+            document.getElementById("painel-leitura")?.classList.add("hidden");
+
+            if (imagemCantinhoAnexada) {
+                removerImagemCantinho(true);
+            }
+
+            atualizarContadorCantinho();
+            mostrarNotificacao("Tudo foi desmarcado e limpo no Cantinho da Unidade!", "info");
+        }
+
         function inserirImagemCantinhoNoPDF(doc, startY) {
-            if (!imagemCantinhoAnexada) return startY;
-
-            let posY = startY + 6;
-            const maxLarguraMM = 115;
-            const maxAlturaMM = 75;
-            const proporcao = imagemCantinhoAnexada.largura / imagemCantinhoAnexada.altura;
-
-            let imgLarguraMM = maxLarguraMM;
-            let imgAlturaMM = imgLarguraMM / proporcao;
-
-            if (imgAlturaMM > maxAlturaMM) {
-                imgAlturaMM = maxAlturaMM;
-                imgLarguraMM = imgAlturaMM * proporcao;
-            }
-
-            // Verifica se cabe na página atual antes das assinaturas
-            if (posY + imgAlturaMM + 16 > 275) {
-                doc.addPage();
-                posY = 20;
-            }
-
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(9);
-            doc.setTextColor(23, 23, 23);
-            doc.text("Registro Fotográfico (Anexo):", 14, posY);
-
-            posY += 3;
-            doc.setDrawColor(209, 213, 219);
-            doc.rect(14, posY, imgLarguraMM + 2, imgAlturaMM + 2);
-            doc.addImage(imagemCantinhoAnexada.dataUrl, imagemCantinhoAnexada.formato, 15, posY + 1, imgLarguraMM, imgAlturaMM);
-
-            return posY + imgAlturaMM + 4;
+            return inserirImagemNoPDF(doc, startY, imagemCantinhoAnexada, "Registro Fotográfico - Cantinho da Unidade (Anexo):");
         }
 
-        // Gera o relatório em PDF do Cantinho da Unidade (Especialidade e Livro específicos são opcionais)
-        function gerarPDFCantinho() {
-            const anotacoes = document.getElementById("anotacoes-cantinho").value.trim();
-            const livroSelecionado = document.getElementById("select-livro")?.value || "";
-            const espsMarcadas = listaEspecialidades.filter(nome => especialidadesSelecionadas.has(nome));
-
-            const selecionadas = atividadesCantinho
+        function obterAtividadesCantinhoSelecionadas() {
+            return atividadesCantinho
                 .filter(item => document.getElementById(`chk-cantinho-${item.id}`)?.checked)
                 .map(item => {
-                    if (item.id === "especialidades" && espsMarcadas.length > 0) {
-                        return `${item.label} (${espsMarcadas.join(", ")})`;
+                    if (item.id === "especialidades") {
+                        const escolhidas = listaEspecialidades.filter(esp => especialidadesSelecionadas.has(esp));
+                        return escolhidas.length > 0
+                            ? `${item.label} (${escolhidas.join(", ")})`
+                            : item.label;
                     }
-                    if (item.id === "leitura" && livroSelecionado) {
-                        return `${item.label} (Livro: ${livroSelecionado})`;
+                    if (item.id === "leitura") {
+                        const idx = document.getElementById("select-livro")?.value;
+                        const livroNome = (idx !== "" && listaLivros[Number(idx)]) ? listaLivros[Number(idx)] : "";
+                        return livroNome ? `${item.label} (Livro: ${livroNome})` : item.label;
                     }
                     return item.label;
                 });
+        }
+
+        function gerarPDFCantinho() {
+            const anotacoes = document.getElementById("anotacoes-cantinho").value.trim();
+            const selecionadas = obterAtividadesCantinhoSelecionadas();
 
             if (!anotacoes && selecionadas.length === 0 && !imagemCantinhoAnexada) {
                 mostrarNotificacao("Preencha as anotações, anexe uma imagem ou selecione uma atividade antes de gerar o PDF.", "erro");
                 return;
             }
 
-            // Usa a data selecionada na primeira aba (ou a data atual)
             const dataInput = document.getElementById("data-reuniao").value;
             let dataFormatada = new Date().toLocaleDateString('pt-BR');
             let sufixoArquivo = dataFormatada.replace(/\//g, '-');
@@ -1573,7 +1663,6 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Cabeçalho do PDF (Preto e Verde)
                 doc.setFillColor(10, 10, 10);
                 doc.rect(0, 0, 210, 32, 'F');
 
@@ -1590,9 +1679,8 @@
                 doc.setTextColor(134, 239, 172);
                 doc.text(`Data da Reunião: ${dataFormatada}`, 14, 24);
 
-                // Seção de Atividades Realizadas
                 const linhasAtividades = selecionadas.length > 0
-                    ? selecionadas.map((atividade, i) => [i + 1, atividade, "Realizada"])
+                    ? selecionadas.map((ativ, i) => [i + 1, ativ, "Realizada"])
                     : [["-", "Nenhuma atividade selecionada", "-"]];
 
                 doc.autoTable({
@@ -1625,9 +1713,7 @@
                     }
                 });
 
-                // Seção de Anotações
                 const aposTabelaY = (doc.lastAutoTable.finalY || 100) + 10;
-
                 doc.autoTable({
                     startY: aposTabelaY,
                     head: [["Anotações do Cantinho da Unidade"]],
@@ -1648,7 +1734,6 @@
                     }
                 });
 
-                // Insere imagem anexada (se houver) e assinaturas no rodapé
                 let finalY = inserirImagemCantinhoNoPDF(doc, doc.lastAutoTable.finalY || 180);
                 if (finalY + 38 > 285) {
                     doc.addPage();
@@ -1668,9 +1753,229 @@
             }
         }
 
-        // ==================== RELATÓRIO GERAL (UNE AS 3 ABAS EM UM ÚNICO PDF) ====================
+        // ==================== FUNÇÕES DA ABA 4: SECRETÁRIO(A) ====================
 
-        function gerarPDFGeral() {
+        function renderizarSecretario() {
+            const container = document.getElementById("lista-opcoes-secretario");
+            if (!container) return;
+            container.innerHTML = "";
+
+            opcoesSecretario.forEach((item, index) => {
+                const wrapper = document.createElement("div");
+                wrapper.className = `flex items-center justify-between gap-2 p-3.5 sm:p-4 rounded-xl border-2 transition ${item.marcada ? "border-green-600 bg-green-50" : "border-gray-200 bg-gray-50 hover:border-green-500"}`;
+
+                const btnRemoverHtml = !item.fixa ? `
+                    <button type="button" onclick="abrirModalRemoverOpcaoSecretario(${index})" title="Remover opção adicionada"
+                        class="w-8 h-8 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 flex items-center justify-center transition shrink-0">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                ` : "";
+
+                wrapper.innerHTML = `
+                    <label class="flex items-center gap-3 flex-1 cursor-pointer select-none min-w-0">
+                        <div class="w-9 h-9 rounded-lg ${item.marcada ? "bg-green-600 text-white" : "bg-neutral-900 text-green-400"} flex items-center justify-center shrink-0 transition">
+                            <i class="fa-solid ${item.icon} text-sm"></i>
+                        </div>
+                        <span class="font-bold text-gray-800 text-sm sm:text-base truncate">${item.label}</span>
+                        <input type="checkbox" ${item.marcada ? "checked" : ""} onchange="alternarOpcaoSecretario(${index}, this.checked)"
+                            class="w-5 h-5 accent-green-600 rounded cursor-pointer ml-auto shrink-0">
+                    </label>
+                    ${btnRemoverHtml}
+                `;
+
+                container.appendChild(wrapper);
+            });
+
+            atualizarContadorSecretario();
+        }
+
+        function alternarOpcaoSecretario(index, checked) {
+            if (!opcoesSecretario[index]) return;
+            opcoesSecretario[index].marcada = checked;
+            renderizarSecretario();
+        }
+
+        function atualizarContadorSecretario() {
+            const total = opcoesSecretario.length;
+            const marcadas = opcoesSecretario.filter(item => item.marcada).length;
+            const contadorEl = document.getElementById("contador-secretario");
+            if (contadorEl) {
+                contadorEl.textContent = `${marcadas}/${total}`;
+            }
+        }
+
+        function adicionarOpcaoSecretario() {
+            const input = document.getElementById("input-nova-opcao-secretario");
+            const texto = input.value.trim();
+
+            if (!texto) {
+                mostrarNotificacao("Digite o nome da opção antes de adicionar.", "erro");
+                input.focus();
+                return;
+            }
+
+            const jaExiste = opcoesSecretario.some(item => item.label.toLowerCase() === texto.toLowerCase());
+            if (jaExiste) {
+                mostrarNotificacao("Esta opção já existe na lista!", "erro");
+                input.focus();
+                return;
+            }
+
+            opcoesSecretario.push({
+                id: `custom_${Date.now()}`,
+                label: texto,
+                icon: "fa-calendar-check",
+                fixa: false,
+                marcada: true
+            });
+
+            input.value = "";
+            renderizarSecretario();
+            mostrarNotificacao(`Opção "${texto}" adicionada e marcada!`, "sucesso");
+        }
+
+        function abrirModalRemoverOpcaoSecretario(index) {
+            const item = opcoesSecretario[index];
+            if (!item || item.fixa) return;
+
+            itemCantinhoParaRemover = { tipo: "secretario", index };
+            document.getElementById("modal-cantinho-titulo").textContent = "REMOVER OPÇÃO - CONFIRMAR";
+            document.getElementById("modal-cantinho-nome").textContent = item.label;
+
+            const modal = document.getElementById("modal-remover-cantinho");
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function aoSelecionarImagemSecretario(event) {
+            const arquivo = event.target.files?.[0];
+            if (!arquivo) return;
+
+            if (!arquivo.type.startsWith("image/")) {
+                mostrarNotificacao("Selecione apenas arquivos de imagem válidos.", "erro");
+                event.target.value = "";
+                return;
+            }
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const maxDim = 1200;
+                    let largura = img.width;
+                    let altura = img.height;
+
+                    if (largura > maxDim || altura > maxDim) {
+                        if (largura > altura) {
+                            altura = Math.round((altura * maxDim) / largura);
+                            largura = maxDim;
+                        } else {
+                            largura = Math.round((largura * maxDim) / altura);
+                            altura = maxDim;
+                        }
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = largura;
+                    canvas.height = altura;
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, largura, altura);
+                    ctx.drawImage(img, 0, 0, largura, altura);
+
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    imagemSecretarioAnexada = {
+                        dataUrl,
+                        formato: "JPEG",
+                        largura,
+                        altura,
+                        nome: arquivo.name
+                    };
+
+                    document.getElementById("preview-imagem-secretario").src = dataUrl;
+                    document.getElementById("preview-imagem-secretario-container").classList.remove("hidden");
+                    document.getElementById("nome-arquivo-imagem-secretario").textContent = arquivo.name;
+                    document.getElementById("label-btn-imagem-secretario").textContent = "Trocar Imagem";
+
+                    mostrarNotificacao("Imagem anexada às anotações do Secretário(a)!", "sucesso");
+                };
+                img.src = e.target.result;
+            };
+            leitor.readAsDataURL(arquivo);
+        }
+
+        function removerImagemSecretario(silencioso = false) {
+            imagemSecretarioAnexada = null;
+            const input = document.getElementById("input-imagem-secretario");
+            if (input) input.value = "";
+            document.getElementById("preview-imagem-secretario").src = "";
+            document.getElementById("preview-imagem-secretario-container").classList.add("hidden");
+            document.getElementById("nome-arquivo-imagem-secretario").textContent = "Nenhuma imagem anexada (opcional)";
+            document.getElementById("label-btn-imagem-secretario").textContent = "Anexar Imagem";
+            if (!silencioso) {
+                mostrarNotificacao("Imagem removida das anotações.", "info");
+            }
+        }
+
+        function limparTudoSecretario() {
+            const campoAnotacoes = document.getElementById("anotacoes-secretario");
+            if (campoAnotacoes) campoAnotacoes.value = "";
+
+            opcoesSecretario.forEach(item => {
+                item.marcada = false;
+            });
+
+            if (imagemSecretarioAnexada) {
+                removerImagemSecretario(true);
+            }
+
+            renderizarSecretario();
+            mostrarNotificacao("Tudo foi desmarcado e limpo na aba Secretário(a)!", "info");
+        }
+
+        function inserirImagemNoPDF(doc, startY, imagemObj, titulo = "Registro Fotográfico (Anexo):") {
+            if (!imagemObj) return startY;
+
+            let posY = startY + 6;
+            const maxLarguraMM = 115;
+            const maxAlturaMM = 75;
+            const proporcao = imagemObj.largura / imagemObj.altura;
+
+            let imgLarguraMM = maxLarguraMM;
+            let imgAlturaMM = imgLarguraMM / proporcao;
+
+            if (imgAlturaMM > maxAlturaMM) {
+                imgAlturaMM = maxAlturaMM;
+                imgLarguraMM = imgAlturaMM * proporcao;
+            }
+
+            if (posY + imgAlturaMM + 16 > 275) {
+                doc.addPage();
+                posY = 20;
+            }
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9);
+            doc.setTextColor(23, 23, 23);
+            doc.text(titulo, 14, posY);
+
+            posY += 3;
+            doc.setDrawColor(209, 213, 219);
+            doc.rect(14, posY, imgLarguraMM + 2, imgAlturaMM + 2);
+            doc.addImage(imagemObj.dataUrl, imagemObj.formato, 15, posY + 1, imgLarguraMM, imgAlturaMM);
+
+            return posY + imgAlturaMM + 4;
+        }
+
+        function gerarPDFSecretario() {
+            const anotacoes = document.getElementById("anotacoes-secretario").value.trim();
+            const selecionadas = opcoesSecretario.filter(item => item.marcada).map(item => item.label);
+
+            if (!anotacoes && selecionadas.length === 0 && !imagemSecretarioAnexada) {
+                mostrarNotificacao("Preencha as anotações, anexe uma imagem ou selecione uma opção antes de gerar o PDF.", "erro");
+                return;
+            }
+
             const dataInput = document.getElementById("data-reuniao").value;
             let dataFormatada = new Date().toLocaleDateString('pt-BR');
             let sufixoArquivo = dataFormatada.replace(/\//g, '-');
@@ -1685,12 +1990,118 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // Cabeçalho Principal (Preto e Verde)
                 doc.setFillColor(10, 10, 10);
-                doc.rect(0, 0, 210, 34, 'F');
+                doc.rect(0, 0, 210, 32, 'F');
 
                 doc.setFillColor(34, 197, 94);
-                doc.rect(0, 34, 210, 2.5, 'F');
+                doc.rect(0, 32, 210, 2.5, 'F');
+
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(18);
+                doc.text("RELATÓRIO DE SECRETARIA - UNIDADE ELISEU", 14, 15);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(11);
+                doc.setTextColor(134, 239, 172);
+                doc.text(`Data de Registro: ${dataFormatada}`, 14, 24);
+
+                const linhasOpcoes = selecionadas.length > 0
+                    ? selecionadas.map((opcao, i) => [i + 1, opcao, "Realizada"])
+                    : [["-", "Nenhuma opção selecionada", "-"]];
+
+                doc.autoTable({
+                    startY: 42,
+                    head: [["Nº", "Reuniões / Ocorrências Registradas", "Status"]],
+                    body: linhasOpcoes,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [23, 23, 23],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        fontSize: 9.5
+                    },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 14 },
+                        1: { halign: 'left', cellWidth: 132, fontStyle: 'bold' },
+                        2: { halign: 'center', cellWidth: 36 }
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 4,
+                        valign: 'middle'
+                    },
+                    didParseCell: function(data) {
+                        if (data.section === 'body' && data.column.index === 2 && data.cell.raw === 'Realizada') {
+                            data.cell.styles.textColor = [22, 163, 74];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                });
+
+                const aposTabelaY = (doc.lastAutoTable.finalY || 100) + 10;
+                doc.autoTable({
+                    startY: aposTabelaY,
+                    head: [["Anotações da Secretaria"]],
+                    body: [[anotacoes || "Nenhuma anotação registrada."]],
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [23, 23, 23],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'left',
+                        fontSize: 9.5
+                    },
+                    styles: {
+                        fontSize: 9.5,
+                        cellPadding: 5,
+                        textColor: [31, 41, 55],
+                        valign: 'top'
+                    }
+                });
+
+                let finalY = inserirImagemNoPDF(doc, doc.lastAutoTable.finalY || 180, imagemSecretarioAnexada);
+                if (finalY + 38 > 285) {
+                    doc.addPage();
+                    finalY = 10;
+                }
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Assinatura do Conselheiro(a): ____________________________________", 14, finalY + 20);
+                doc.text("Assinatura do Diretor(a): ________________________________________", 14, finalY + 34);
+
+                doc.save(`Secretaria_Unidade_Eliseu_${sufixoArquivo}.pdf`);
+                mostrarNotificacao("Relatório do Secretário(a) gerado em PDF com sucesso!", "sucesso");
+
+            } catch (erro) {
+                console.error("Erro ao gerar PDF do Secretário(a):", erro);
+                mostrarNotificacao("Ocorreu um erro ao gerar o PDF. Tente novamente.", "erro");
+            }
+        }
+
+        // ==================== RELATÓRIO GERAL (UNE AS 4 ABAS EM UM ÚNICO PDF) ====================
+
+        function gerarRelatorioGeral() {
+            const dataInput = document.getElementById("data-reuniao").value;
+            let dataFormatada = new Date().toLocaleDateString('pt-BR');
+            let sufixoArquivo = dataFormatada.replace(/\//g, '-');
+
+            if (dataInput) {
+                const [ano, mes, dia] = dataInput.split("-");
+                dataFormatada = `${dia}/${mes}/${ano}`;
+                sufixoArquivo = `${dia}-${mes}-${ano}`;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFillColor(10, 10, 10);
+                doc.rect(0, 0, 210, 32, 'F');
+
+                doc.setFillColor(34, 197, 94);
+                doc.rect(0, 32, 210, 2.5, 'F');
 
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");
@@ -1698,15 +2109,15 @@
                 doc.text("RELATÓRIO GERAL - UNIDADE ELISEU", 14, 15);
 
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10.5);
+                doc.setFontSize(11);
                 doc.setTextColor(134, 239, 172);
-                doc.text(`Data da Reunião: ${dataFormatada}   |   Total de Membros: ${desbravadores.length}`, 14, 25);
+                doc.text(`Data de Referência: ${dataFormatada}`, 14, 24);
 
                 // --- SEÇÃO 1: CHAMADA E AVALIAÇÃO ---
                 doc.setTextColor(10, 10, 10);
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(11.5);
-                doc.text("1. CHAMADA E AVALIAÇÃO", 14, 45);
+                doc.text("1. CHAMADA E AVALIAÇÃO", 14, 42);
 
                 const colunasChamada = [
                     "Nº",
@@ -1740,7 +2151,7 @@
                 });
 
                 doc.autoTable({
-                    startY: 48,
+                    startY: 45,
                     head: [colunasChamada],
                     body: linhasChamada,
                     theme: 'grid',
@@ -1783,7 +2194,7 @@
 
                 // --- SEÇÃO 2: CARGOS DA UNIDADE ---
                 let posY = (doc.lastAutoTable.finalY || 120) + 10;
-                if (posY > 255) {
+                if (posY > 245) {
                     doc.addPage();
                     posY = 20;
                 }
@@ -1846,23 +2257,10 @@
                 doc.text("3. CANTINHO DA UNIDADE", 14, posY);
 
                 const anotacoes = document.getElementById("anotacoes-cantinho").value.trim();
-                const livroSelecionado = document.getElementById("select-livro")?.value || "";
-                const espsMarcadas = listaEspecialidades.filter(nome => especialidadesSelecionadas.has(nome));
-
-                const selecionadas = atividadesCantinho
-                    .filter(item => document.getElementById(`chk-cantinho-${item.id}`)?.checked)
-                    .map(item => {
-                        if (item.id === "especialidades" && espsMarcadas.length > 0) {
-                            return `${item.label} (${espsMarcadas.join(", ")})`;
-                        }
-                        if (item.id === "leitura" && livroSelecionado) {
-                            return `${item.label} (Livro: ${livroSelecionado})`;
-                        }
-                        return item.label;
-                    });
+                const selecionadas = obterAtividadesCantinhoSelecionadas();
 
                 const linhasAtividades = selecionadas.length > 0
-                    ? selecionadas.map((atividade, i) => [i + 1, atividade, "Realizada"])
+                    ? selecionadas.map((ativ, i) => [i + 1, ativ, "Realizada"])
                     : [["-", "Nenhuma atividade selecionada", "-"]];
 
                 doc.autoTable({
@@ -1895,9 +2293,9 @@
                     }
                 });
 
-                const aposAtividadesY = (doc.lastAutoTable.finalY || 200) + 6;
+                const aposAtivY = (doc.lastAutoTable.finalY || 200) + 6;
                 doc.autoTable({
-                    startY: aposAtividadesY,
+                    startY: aposAtivY,
                     head: [["Anotações do Cantinho da Unidade"]],
                     body: [[anotacoes || "Nenhuma anotação registrada."]],
                     theme: 'grid',
@@ -1916,9 +2314,87 @@
                     }
                 });
 
-                // --- IMAGEM ANEXADA E ASSINATURAS NO RODAPÉ ---
                 let posAposImagem = inserirImagemCantinhoNoPDF(doc, doc.lastAutoTable.finalY || 220);
-                let finalY = posAposImagem + 18;
+
+                // --- SEÇÃO 4: SECRETÁRIO(A) ---
+                posY = posAposImagem + 10;
+                if (posY > 245) {
+                    doc.addPage();
+                    posY = 20;
+                }
+
+                doc.setTextColor(10, 10, 10);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11.5);
+                doc.text("4. SECRETÁRIO(A)", 14, posY);
+
+                const anotacoesSec = document.getElementById("anotacoes-secretario").value.trim();
+                const selecionadasSec = opcoesSecretario.filter(item => item.marcada).map(item => item.label);
+
+                const linhasSec = selecionadasSec.length > 0
+                    ? selecionadasSec.map((opcao, i) => [i + 1, opcao, "Realizada"])
+                    : [["-", "Nenhuma opção selecionada", "-"]];
+
+                doc.autoTable({
+                    startY: posY + 3,
+                    head: [["Nº", "Reuniões / Ocorrências Registradas", "Status"]],
+                    body: linhasSec,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [23, 23, 23],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        fontSize: 8.5
+                    },
+                    columnStyles: {
+                        0: { halign: 'center', cellWidth: 14 },
+                        1: { halign: 'left', cellWidth: 132, fontStyle: 'bold' },
+                        2: { halign: 'center', cellWidth: 36 }
+                    },
+                    styles: {
+                        fontSize: 8.5,
+                        cellPadding: 3.5,
+                        valign: 'middle'
+                    },
+                    didParseCell: function(data) {
+                        if (data.section === 'body' && data.column.index === 2 && data.cell.raw === 'Realizada') {
+                            data.cell.styles.textColor = [22, 163, 74];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                });
+
+                const aposSecY = (doc.lastAutoTable.finalY || 200) + 6;
+                doc.autoTable({
+                    startY: aposSecY,
+                    head: [["Anotações da Secretaria"]],
+                    body: [[anotacoesSec || "Nenhuma anotação registrada."]],
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [23, 23, 23],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'left',
+                        fontSize: 8.5
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 4.5,
+                        textColor: [31, 41, 55],
+                        valign: 'top'
+                    }
+                });
+
+                let posAposImagemSec = inserirImagemNoPDF(
+                    doc,
+                    doc.lastAutoTable.finalY || 220,
+                    imagemSecretarioAnexada,
+                    "Registro Fotográfico - Secretaria (Anexo):"
+                );
+
+                // --- ASSINATURAS NO RODAPÉ ---
+                let finalY = posAposImagemSec + 18;
                 if (finalY + 22 > 285) {
                     doc.addPage();
                     finalY = 25;
@@ -1938,106 +2414,129 @@
             }
         }
 
-        // ==================== MOTOR DO APLICATIVO ANDROID (PWA) ====================
-        let promptInstalacao;
+        // ==================== CONFIGURAÇÃO ANDROID PWA ====================
+        let eventoInstalacaoAndroid = null;
 
-        function configurarPWA() {
-            // 1. Vetor fiel da barraca anexada (fundo claro para o contorno preto se destacar na tela inicial do Android)
-            const iconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>
-                <rect width='512' height='512' rx='112' fill='#ffffff'/>
-                <g transform='translate(14, 10) scale(0.95)'>
-                    <path d='M168 96 L402 96 L484 416 L248 416 Z' fill='#52b765' stroke='#000000' stroke-width='18' stroke-linejoin='round'/>
-                    <path d='M168 96 Q285 135 402 96 L402 115 Q285 150 168 115 Z' fill='#000000'/>
-                    <line x1='230' y1='168' x2='295' y2='168' stroke='#000000' stroke-width='16' stroke-linecap='round'/>
-                    <circle cx='326' cy='168' r='8' fill='#000000'/>
-                    <circle cx='355' cy='168' r='8' fill='#000000'/>
-                    <line x1='275' y1='212' x2='415' y2='212' stroke='#000000' stroke-width='16' stroke-linecap='round'/>
-                    <rect x='248' y='376' width='236' height='40' fill='#86d894' stroke='#000000' stroke-width='18' stroke-linejoin='round'/>
-                    <circle cx='400' cy='346' r='8' fill='#000000'/>
-                    <circle cx='430' cy='346' r='8' fill='#000000'/>
-                    <polygon points='168,96 42,416 294,416' fill='#3a8e49' stroke='#000000' stroke-width='18' stroke-linejoin='round'/>
-                    <polygon points='168,280 105,325 95,416 241,416 231,325' fill='#52b765' stroke='#000000' stroke-width='16' stroke-linejoin='round'/>
-                    <polygon points='168,280 132,416 204,416' fill='#86d894' stroke='#000000' stroke-width='15' stroke-linejoin='round'/>
-                    <line x1='42' y1='365' x2='10' y2='416' stroke='#000000' stroke-width='18' stroke-linecap='round'/>
-                    <line x1='294' y1='365' x2='326' y2='416' stroke='#000000' stroke-width='18' stroke-linecap='round'/>
-                </g>
+        function gerarDataUriBrasaoEliseuFallback() {
+            const svgBrasao = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <rect width="512" height="512" rx="96" fill="#ffffff"/>
+                <!-- Fundo do Brasão -->
+                <path d="M256,28 C312,28 354,68 356,120 L446,245 L478,348 L442,395 L256,488 L70,395 L34,348 L66,245 L156,120 C158,68 200,28 256,28 Z" fill="#0d2614" stroke="#facc15" stroke-width="10" stroke-linejoin="round"/>
+                <!-- Sol -->
+                <circle cx="256" cy="118" r="78" fill="#facc15"/>
+                <!-- Montanhas -->
+                <polygon points="256,64 105,255 407,255" fill="#2e7d32" stroke="#0d2614" stroke-width="8" stroke-linejoin="round"/>
+                <polygon points="256,64 256,255 407,255" fill="#66bb6a"/>
+                <!-- Nuvem -->
+                <path d="M120,126 C120,112 135,104 148,110 C156,95 180,95 188,112 C202,112 210,124 204,136 L124,136 C118,136 116,130 120,126 Z" fill="#fefce8"/>
+                <!-- Pinheiros -->
+                <polygon points="95,152 62,255 128,255" fill="#0d2614"/>
+                <polygon points="138,180 112,255 164,255" fill="#143d1f"/>
+                <polygon points="417,152 384,255 450,255" fill="#0d2614"/>
+                <polygon points="374,180 348,255 400,255" fill="#143d1f"/>
+                <!-- Barraca Central -->
+                <polygon points="256,138 145,258 367,258" fill="#9ccc65" stroke="#facc15" stroke-width="7" stroke-linejoin="round"/>
+                <polygon points="256,138 225,258 272,258" fill="#0d2614"/>
+                <!-- Mastro e Bandeira Desbravadores -->
+                <line x1="322" y1="82" x2="314" y2="258" stroke="#facc15" stroke-width="9" stroke-linecap="round"/>
+                <circle cx="322" cy="78" r="7" fill="#facc15"/>
+                <path d="M326,86 Q372,96 420,90 L402,126 L422,162 Q372,168 323,156 Z" fill="#dc2626" stroke="#facc15" stroke-width="6" stroke-linejoin="round"/>
+                <polygon points="350,106 390,106 370,144" fill="#ffffff" stroke="#dc2626" stroke-width="3"/>
+                <line x1="354" y1="128" x2="388" y2="118" stroke="#1e3a8a" stroke-width="5" stroke-linecap="round"/>
+                <!-- Faixa Principal -->
+                <path d="M48,266 Q256,246 464,266 L486,356 Q256,396 26,356 Z" fill="#0d2614" stroke="#facc15" stroke-width="9" stroke-linejoin="round"/>
+                <text x="256" y="286" text-anchor="middle" fill="#fefce8" font-family="Arial, sans-serif" font-weight="800" font-size="22" letter-spacing="4">DESBRAVADORES</text>
+                <text x="256" y="352" text-anchor="middle" fill="#fefce8" font-family="Arial, sans-serif" font-weight="900" font-size="68" letter-spacing="3">ELISEU</text>
+                <!-- Bíblia Aberta na Base -->
+                <path d="M214,412 Q235,405 256,414 Q277,405 298,412 L304,442 Q277,435 256,445 Q235,435 208,442 Z" fill="#fefce8" stroke="#facc15" stroke-width="4" stroke-linejoin="round"/>
+                <line x1="256" y1="414" x2="256" y2="445" stroke="#0d2614" stroke-width="3"/>
             </svg>`;
-            const iconDataUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg);
+            return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgBrasao);
+        }
 
-            // Atualiza dinamicamente o favicon caso o arquivo barraca.png não esteja na mesma pasta
-            const linkIcon = document.querySelector("link[rel='icon']");
-            if (linkIcon) {
-                const imgTeste = new Image();
-                imgTeste.onerror = () => { linkIcon.href = iconDataUrl; };
-                imgTeste.src = "barraca.png";
-            }
-
-            // 2. Cria o arquivo Manifest do App dinamicamente usando a barraca (PNG real + fallback vetorial)
-            let barracaPngUrl = "barraca.png";
+        function resolverUrlIconeApp() {
             try {
-                if (window.location.protocol.startsWith("http")) {
-                    barracaPngUrl = new URL("barraca.png", window.location.href).href;
+                const { protocol } = window.location;
+                if (protocol === "http:" || protocol === "https:") {
+                    return new URL("icondbv.png", window.location.href).href;
                 }
             } catch (e) {
-                barracaPngUrl = "barraca.png";
+                // Ignora erro em contextos restritos
+            }
+            return gerarDataUriBrasaoEliseuFallback();
+        }
+
+        function configurarPWA() {
+            const iconeFallback = gerarDataUriBrasaoEliseuFallback();
+            const headerImg = document.getElementById("header-barraca-img");
+            const favicon = document.getElementById("app-favicon");
+            const touchIcon = document.getElementById("app-touch-icon");
+
+            if (headerImg) {
+                headerImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = iconeFallback;
+                    if (favicon) favicon.href = iconeFallback;
+                    if (touchIcon) touchIcon.href = iconeFallback;
+                };
             }
 
-            const manifest = {
-                name: "Gestão Unidade Eliseu",
+            const iconeAppUrl = resolverUrlIconeApp();
+            const isHttp = window.location.protocol === "http:" || window.location.protocol === "https:";
+            const startUrl = isHttp ? window.location.href : ".";
+
+            const manifesto = {
+                name: "Unidade Eliseu - Desbravadores",
                 short_name: "Unidade Eliseu",
-                description: "Aplicativo de Controle dos Desbravadores",
-                start_url: window.location.protocol.startsWith("http") ? window.location.href : ".",
+                description: "Controle de Chamada, Avaliação, Cargos, Cantinho da Unidade e Secretaria",
+                start_url: startUrl,
                 display: "standalone",
                 background_color: "#0a0a0a",
-                theme_color: "#22c55e",
+                theme_color: "#0a0a0a",
+                orientation: "portrait",
                 icons: [
-                    { src: barracaPngUrl, sizes: "512x512", type: "image/png", purpose: "any" },
-                    { src: iconDataUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+                    { src: iconeAppUrl, sizes: "192x192", type: isHttp ? "image/png" : "image/svg+xml", purpose: "any maskable" },
+                    { src: iconeAppUrl, sizes: "512x512", type: isHttp ? "image/png" : "image/svg+xml", purpose: "any maskable" }
                 ]
             };
 
-            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-            const manifestUrl = URL.createObjectURL(blob);
-            document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestUrl}">`);
-
-            // 3. Intercepta o evento nativo do Android para instalação
-            window.addEventListener('beforeinstallprompt', (evento) => {
-                // Impede que o mini-info bar padrão do Chrome apareça automaticamente
-                evento.preventDefault();
-                // Guarda o evento para acioná-lo depois ao clicar no botão
-                promptInstalacao = evento;
-                
-                // Mostra o botão "Instalar App" no cabeçalho
-                const btnInstalar = document.getElementById('btn-instalar');
-                if (btnInstalar) {
-                    btnInstalar.classList.remove('hidden');
-                }
-            });
-
-            // 4. Configura o clique do botão de instalação
-            const btnInstalar = document.getElementById('btn-instalar');
-            if (btnInstalar) {
-                btnInstalar.addEventListener('click', async () => {
-                    if (promptInstalacao) {
-                        // Mostra o modal nativo do Android perguntando se deseja instalar
-                        promptInstalacao.prompt();
-                        const resultado = await promptInstalacao.userChoice;
-                        
-                        if (resultado.outcome === 'accepted') {
-                            mostrarNotificacao("Instalando aplicativo na tela inicial...", "sucesso");
-                            btnInstalar.classList.add('hidden'); // Esconde o botão após instalar
-                        }
-                        // Limpa o prompt
-                        promptInstalacao = null;
-                    }
-                });
+            try {
+                const stringManifest = JSON.stringify(manifesto);
+                const blob = new Blob([stringManifest], { type: 'application/json' });
+                const manifestURL = URL.createObjectURL(blob);
+                document.getElementById('app-manifest').setAttribute('href', manifestURL);
+            } catch (e) {
+                console.warn("Manifesto PWA não pôde ser anexado:", e);
             }
 
-            // 5. Confirmação quando a instalação é concluída
-            window.addEventListener('appinstalled', () => {
-                mostrarNotificacao("Aplicativo instalado com sucesso!", "sucesso");
-                if (btnInstalar) btnInstalar.classList.add('hidden');
-            });
+            if ('serviceWorker' in navigator && isHttp) {
+                const swCode = `
+                    self.addEventListener('install', (e) => self.skipWaiting());
+                    self.addEventListener('fetch', (e) => {});
+                `;
+                try {
+                    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+                } catch (e) {}
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            eventoInstalacaoAndroid = e;
+            const btnInstalar = document.getElementById('btn-instalar-app');
+            if (btnInstalar) btnInstalar.classList.remove('hidden');
+        });
+
+        async function instalarApp() {
+            if (!eventoInstalacaoAndroid) return;
+            eventoInstalacaoAndroid.prompt();
+            const { outcome } = await eventoInstalacaoAndroid.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('btn-instalar-app').classList.add('hidden');
+                mostrarNotificacao("Aplicativo instalado na tela inicial!", "sucesso");
+            }
+            eventoInstalacaoAndroid = null;
         }
     </script>
 </body>
