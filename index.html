@@ -268,77 +268,100 @@
                     <textarea id="anotacoes-cantinho" rows="5"
                         placeholder="Digite aqui tudo o que aconteceu durante o Cantinho da Unidade..."
                         class="w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm sm:text-base rounded-xl focus:ring-green-600 focus:border-green-600 block p-4 transition resize-y"></textarea>
+
+                    <!-- Anexo de Imagem nas Anotações -->
+                    <div class="mt-3 flex flex-col gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <label for="input-imagem-cantinho"
+                                class="cursor-pointer inline-flex items-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition shadow-xs select-none">
+                                <i class="fa-solid fa-image"></i>
+                                <span id="label-btn-imagem-cantinho">Anexar Imagem</span>
+                            </label>
+                            <input type="file" id="input-imagem-cantinho" accept="image/*" onchange="aoSelecionarImagemCantinho(event)" class="hidden">
+                            <span id="nome-arquivo-imagem-cantinho" class="text-xs text-gray-500 font-medium">Nenhuma imagem anexada (opcional)</span>
+                        </div>
+
+                        <!-- Pré-visualização da Imagem Anexada -->
+                        <div id="preview-imagem-cantinho-container" class="hidden relative w-full sm:max-w-md bg-gray-50 border-2 border-green-500/40 rounded-xl p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-green-800 uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-paperclip"></i> Registro Fotográfico Anexado
+                                </span>
+                                <button type="button" onclick="removerImagemCantinho()"
+                                    class="px-2.5 py-1 rounded-lg bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 text-xs font-bold transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash-can"></i> Remover
+                                </button>
+                            </div>
+                            <img id="preview-imagem-cantinho" src="" alt="Pré-visualização da imagem anexada" class="w-full max-h-64 object-contain rounded-lg bg-white border border-gray-200">
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Título Selecione e Opções -->
+                <!-- Seção Selecione -->
                 <div class="pt-4 border-t border-gray-100">
-                    <h3 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-green-600"></i>
-                        Selecione
+                    <h3 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-list-check text-green-600 mr-1.5"></i> Selecione
                     </h3>
                     <div id="lista-atividades-cantinho" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <!-- Opções inseridas via JavaScript -->
                     </div>
 
-                    <!-- Painel Dinâmico: Especialidades -->
-                    <div id="painel-especialidades" class="hidden mt-5 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-award text-green-600 text-base"></i>
-                                Especialidades Trabalhadas
-                            </h4>
-                            <span class="text-xs font-semibold text-green-800 bg-green-100 px-2.5 py-1 rounded-full">Opcional / Múltipla escolha</span>
+                    <!-- Painel Extra: Especialidades (Múltipla Seleção Opcional) -->
+                    <div id="painel-especialidades" class="hidden mt-4 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-sm font-extrabold text-neutral-950 flex items-center gap-2">
+                                <i class="fa-solid fa-award text-green-600"></i>
+                                Especialidades Realizadas (Opcional)
+                            </span>
+                            <span class="text-xs font-semibold text-green-800">Marque uma ou mais</span>
                         </div>
 
-                        <!-- Lista de Especialidades Cadastradas (Permite marcar várias e remover cada uma) -->
+                        <!-- Lista de Especialidades Cadastradas -->
                         <div id="lista-especialidades-opcoes" class="space-y-2">
-                            <p class="text-xs text-gray-500 italic">Nenhuma especialidade cadastrada. Adicione abaixo se desejar.</p>
+                            <!-- Inserido via JavaScript -->
                         </div>
 
                         <!-- Adicionar Nova Especialidade -->
-                        <div class="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-green-200/70">
-                            <input type="text" id="input-nova-especialidade" placeholder="Digite o nome de uma nova especialidade..."
+                        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-green-200">
+                            <input type="text" id="input-nova-especialidade" placeholder="Nome da especialidade (ex: Ordem Unida)..."
                                 onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('especialidade'); }"
                                 class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium transition">
                             <button type="button" onclick="adicionarItemCantinho('especialidade')"
-                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-5 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow shrink-0">
-                                <i class="fa-solid fa-plus"></i>
-                                Adicionar Especialidade
+                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Adicionar
                             </button>
                         </div>
                     </div>
 
-                    <!-- Painel Dinâmico: Clube de Leitura -->
-                    <div id="painel-leitura" class="hidden mt-5 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-extrabold text-neutral-950 uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-book-open text-green-600 text-base"></i>
-                                Livro do Clube de Leitura
-                            </h4>
-                            <span class="text-xs font-semibold text-green-800 bg-green-100 px-2.5 py-1 rounded-full">Opcional / Detalhe</span>
+                    <!-- Painel Extra: Clube de Leitura (Opcional) -->
+                    <div id="painel-leitura" class="hidden mt-4 p-4 sm:p-5 rounded-2xl bg-green-50/70 border-2 border-green-500/40 space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-sm font-extrabold text-neutral-950 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-green-600"></i>
+                                Livro do Clube de Leitura (Opcional)
+                            </span>
                         </div>
 
                         <!-- Seleção e Remoção de Livro -->
-                        <div class="flex flex-col sm:flex-row gap-2.5">
-                            <select id="select-livro" class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-3 transition cursor-pointer">
-                                <option value="">Nenhum livro cadastrado...</option>
+                        <div class="flex items-center gap-2">
+                            <select id="select-livro"
+                                class="flex-1 bg-white border-2 border-gray-300 text-gray-800 text-sm font-semibold rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 transition cursor-pointer">
+                                <option value="">Nenhum livro cadastrado (opcional)...</option>
                             </select>
                             <button type="button" onclick="abrirModalRemoverItemCantinho('livro')" title="Remover livro selecionado"
-                                class="px-4 py-3 rounded-xl bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/40 font-bold text-sm transition flex items-center justify-center gap-2 shrink-0">
-                                <i class="fa-solid fa-trash-can"></i>
-                                <span>Remover</span>
+                                class="w-10 h-10 rounded-xl bg-red-600/15 hover:bg-red-600 text-red-600 hover:text-white border border-red-500/30 flex items-center justify-center transition shrink-0">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
                             </button>
                         </div>
 
                         <!-- Adicionar Novo Livro -->
-                        <div class="flex flex-col sm:flex-row gap-2.5 pt-2 border-t border-green-200/70">
-                            <input type="text" id="input-novo-livro" placeholder="Digite o nome de um novo livro..."
+                        <div class="flex flex-col sm:flex-row gap-2 pt-2 border-t border-green-200">
+                            <input type="text" id="input-novo-livro" placeholder="Título do livro (ex: Vaso de Barro)..."
                                 onkeydown="if(event.key === 'Enter'){ event.preventDefault(); adicionarItemCantinho('livro'); }"
                                 class="flex-1 bg-white border-2 border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-green-600 focus:border-green-600 block p-2.5 font-medium transition">
                             <button type="button" onclick="adicionarItemCantinho('livro')"
-                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-5 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow shrink-0">
-                                <i class="fa-solid fa-plus"></i>
-                                Adicionar Livro
+                                class="bg-neutral-950 hover:bg-neutral-800 text-green-400 border border-green-500 font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Adicionar
                             </button>
                         </div>
                     </div>
@@ -477,6 +500,7 @@
         let especialidadesSelecionadas = new Set();
         let listaLivros = [];
         let itemCantinhoParaRemover = null; // { tipo: 'especialidade' | 'livro', index: number }
+        let imagemCantinhoAnexada = null; // { dataUrl: string, formato: string, largura: number, altura: number, nome: string }
 
         // Inicialização ao carregar a página
         document.addEventListener("DOMContentLoaded", () => {
@@ -1404,6 +1428,113 @@
             mostrarNotificacao(isEsp ? `Especialidade "${removido}" removida.` : `Livro "${removido}" removido.`, "info");
         }
 
+        // Processa e redimensiona a imagem anexada nas anotações do Cantinho da Unidade
+        function aoSelecionarImagemCantinho(event) {
+            const arquivo = event.target.files?.[0];
+            if (!arquivo) return;
+
+            if (!arquivo.type.startsWith("image/")) {
+                mostrarNotificacao("Selecione apenas arquivos de imagem válidos.", "erro");
+                event.target.value = "";
+                return;
+            }
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Redimensiona proporcionalmente caso seja muito grande para manter o PDF leve e nítido
+                    const maxDim = 1200;
+                    let largura = img.width;
+                    let altura = img.height;
+
+                    if (largura > maxDim || altura > maxDim) {
+                        if (largura > altura) {
+                            altura = Math.round((altura * maxDim) / largura);
+                            largura = maxDim;
+                        } else {
+                            largura = Math.round((largura * maxDim) / altura);
+                            altura = maxDim;
+                        }
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.width = largura;
+                    canvas.height = altura;
+                    const ctx = canvas.getContext("2d");
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, largura, altura);
+                    ctx.drawImage(img, 0, 0, largura, altura);
+
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    imagemCantinhoAnexada = {
+                        dataUrl,
+                        formato: "JPEG",
+                        largura,
+                        altura,
+                        nome: arquivo.name
+                    };
+
+                    document.getElementById("preview-imagem-cantinho").src = dataUrl;
+                    document.getElementById("preview-imagem-cantinho-container").classList.remove("hidden");
+                    document.getElementById("nome-arquivo-imagem-cantinho").textContent = arquivo.name;
+                    document.getElementById("label-btn-imagem-cantinho").textContent = "Trocar Imagem";
+
+                    mostrarNotificacao("Imagem anexada às anotações!", "sucesso");
+                };
+                img.src = e.target.result;
+            };
+            leitor.readAsDataURL(arquivo);
+        }
+
+        // Remove a imagem anexada das anotações do Cantinho da Unidade
+        function removerImagemCantinho() {
+            imagemCantinhoAnexada = null;
+            const input = document.getElementById("input-imagem-cantinho");
+            if (input) input.value = "";
+            document.getElementById("preview-imagem-cantinho").src = "";
+            document.getElementById("preview-imagem-cantinho-container").classList.add("hidden");
+            document.getElementById("nome-arquivo-imagem-cantinho").textContent = "Nenhuma imagem anexada (opcional)";
+            document.getElementById("label-btn-imagem-cantinho").textContent = "Anexar Imagem";
+            mostrarNotificacao("Imagem removida das anotações.", "info");
+        }
+
+        // Desenha a imagem anexada do Cantinho da Unidade no documento PDF e retorna a nova posição Y
+        function inserirImagemCantinhoNoPDF(doc, startY) {
+            if (!imagemCantinhoAnexada) return startY;
+
+            let posY = startY + 6;
+            const maxLarguraMM = 115;
+            const maxAlturaMM = 75;
+            const proporcao = imagemCantinhoAnexada.largura / imagemCantinhoAnexada.altura;
+
+            let imgLarguraMM = maxLarguraMM;
+            let imgAlturaMM = imgLarguraMM / proporcao;
+
+            if (imgAlturaMM > maxAlturaMM) {
+                imgAlturaMM = maxAlturaMM;
+                imgLarguraMM = imgAlturaMM * proporcao;
+            }
+
+            // Verifica se cabe na página atual antes das assinaturas
+            if (posY + imgAlturaMM + 16 > 275) {
+                doc.addPage();
+                posY = 20;
+            }
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9);
+            doc.setTextColor(23, 23, 23);
+            doc.text("Registro Fotográfico (Anexo):", 14, posY);
+
+            posY += 3;
+            doc.setDrawColor(209, 213, 219);
+            doc.rect(14, posY, imgLarguraMM + 2, imgAlturaMM + 2);
+            doc.addImage(imagemCantinhoAnexada.dataUrl, imagemCantinhoAnexada.formato, 15, posY + 1, imgLarguraMM, imgAlturaMM);
+
+            return posY + imgAlturaMM + 4;
+        }
+
         // Gera o relatório em PDF do Cantinho da Unidade (Especialidade e Livro específicos são opcionais)
         function gerarPDFCantinho() {
             const anotacoes = document.getElementById("anotacoes-cantinho").value.trim();
@@ -1422,8 +1553,8 @@
                     return item.label;
                 });
 
-            if (!anotacoes && selecionadas.length === 0) {
-                mostrarNotificacao("Preencha as anotações ou selecione ao menos uma atividade antes de gerar o PDF.", "erro");
+            if (!anotacoes && selecionadas.length === 0 && !imagemCantinhoAnexada) {
+                mostrarNotificacao("Preencha as anotações, anexe uma imagem ou selecione uma atividade antes de gerar o PDF.", "erro");
                 return;
             }
 
@@ -1517,8 +1648,12 @@
                     }
                 });
 
-                // Assinatura no rodapé
-                const finalY = doc.lastAutoTable.finalY || 180;
+                // Insere imagem anexada (se houver) e assinaturas no rodapé
+                let finalY = inserirImagemCantinhoNoPDF(doc, doc.lastAutoTable.finalY || 180);
+                if (finalY + 38 > 285) {
+                    doc.addPage();
+                    finalY = 10;
+                }
                 doc.setFontSize(9);
                 doc.setTextColor(100, 116, 139);
                 doc.text("Assinatura do Conselheiro(a): ____________________________________", 14, finalY + 20);
@@ -1781,8 +1916,9 @@
                     }
                 });
 
-                // --- ASSINATURAS NO RODAPÉ ---
-                let finalY = (doc.lastAutoTable.finalY || 220) + 18;
+                // --- IMAGEM ANEXADA E ASSINATURAS NO RODAPÉ ---
+                let posAposImagem = inserirImagemCantinhoNoPDF(doc, doc.lastAutoTable.finalY || 220);
+                let finalY = posAposImagem + 18;
                 if (finalY + 22 > 285) {
                     doc.addPage();
                     finalY = 25;
