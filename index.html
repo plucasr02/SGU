@@ -825,6 +825,89 @@
     </div>
 
     <script>
+        // ==================== UI E MODAIS ====================
+        window.mostrarNotificacao = function(mensagem, tipo = "info") {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toast-msg");
+            const toastIcon = document.getElementById("toast-icon");
+
+            toastMsg.textContent = mensagem;
+            
+            if (tipo === "sucesso") {
+                toastIcon.className = "fa-solid fa-circle-check text-green-400 text-lg";
+                toast.classList.replace("border-theme", "border-green-500");
+                toast.classList.replace("border-red-500", "border-green-500");
+            } else if (tipo === "erro") {
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-red-400 text-lg";
+                toast.classList.replace("border-theme", "border-red-500");
+                toast.classList.replace("border-green-500", "border-red-500");
+            } else {
+                toastIcon.className = "fa-solid fa-circle-info text-theme text-lg";
+                toast.classList.replace("border-green-500", "border-theme");
+                toast.classList.replace("border-red-500", "border-theme");
+            }
+
+            toast.classList.remove("translate-y-24", "opacity-0");
+            
+            setTimeout(() => {
+                toast.classList.add("translate-y-24", "opacity-0");
+            }, 3500);
+        };
+
+        window.abrirModalConfirmacao = function(titulo, texto, acaoConfirmar) {
+            document.getElementById("modal-confirm-titulo").textContent = titulo;
+            document.getElementById("modal-confirm-texto").textContent = texto;
+            acaoConfirmacaoPendente = acaoConfirmar;
+            document.getElementById("modal-confirmacao").classList.remove("hidden");
+        };
+
+        window.fecharModalConfirmacao = function() {
+            acaoConfirmacaoPendente = null;
+            document.getElementById("modal-confirmacao").classList.add("hidden");
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnConfirmar = document.getElementById("btn-confirmar-acao");
+            if (btnConfirmar) {
+                btnConfirmar.addEventListener("click", () => {
+                    if (acaoConfirmacaoPendente) acaoConfirmacaoPendente();
+                    fecharModalConfirmacao();
+                });
+            }
+        });
+
+        window.abrirModalOffline = function() {
+            document.getElementById("modal-offline").classList.remove("hidden");
+        };
+
+        window.fecharModalOffline = function() {
+            document.getElementById("modal-offline").classList.add("hidden");
+        };
+
+        window.baixarServiceWorker = function() {
+            const swContent = "const CACHE_NAME = 'aaziz-v1';\nconst ASSETS = ['/','/index.html'];\nself.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))); });\nself.addEventListener('fetch', (e) => { e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request))); });";
+            const blob = new Blob([swContent], { type: 'application/javascript' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'sw.js';
+            link.click();
+            mostrarNotificacao("Arquivo sw.js baixado com sucesso!", "sucesso");
+        };
+
+        window.atualizarStatusConexao = function() {
+            const dot = document.getElementById("status-offline-dot");
+            const txt = document.getElementById("status-offline-texto");
+            if (dot && txt) {
+                if (navigator.onLine) {
+                    dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+                    txt.textContent = "Online";
+                } else {
+                    dot.className = "w-2 h-2 rounded-full bg-red-500";
+                    txt.textContent = "Offline";
+                }
+            }
+        };
+
         // ==================== CONFIGURAÇÕES E DADOS BASE ====================
         const STORAGE_KEY = "aaziz_clube_dbv_state_v1";
         let acaoConfirmacaoPendente = null;
