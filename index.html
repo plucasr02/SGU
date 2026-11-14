@@ -303,24 +303,24 @@
             </section>
 
             <!-- Botão de Gerar Relatório em PDF no fim da Aba 1 -->
-            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col lg:flex-row items-center justify-between gap-4">
-                <div class="text-center lg:text-left">
+            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col gap-5">
+                <div class="text-left border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-900">Finalizar Chamada</h3>
                     <p class="text-sm text-gray-500">Clique novamente em "Sim" ou "Não" para desmarcar, ou gere o PDF abaixo.</p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row flex-wrap w-full lg:w-auto justify-end gap-3">
-                    <button onclick="limparTudoChamada()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eraser"></i>
-                        Limpar Tudo
+                <div class="flex flex-col w-full gap-3">
+                    <button onclick="gerarPDF()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-99 flex items-center justify-center gap-2.5 text-base">
+                        <i class="fa-solid fa-file-pdf text-xl"></i>
+                        Gerar Relatório em PDF
                     </button>
-                    <button id="btn-marcar-todos" onclick="marcarTodosSim()" class="w-full sm:w-auto bg-neutral-950 hover:bg-neutral-800 text-green-400 border-2 border-green-600 font-bold py-3.5 px-5 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <button id="btn-marcar-todos" onclick="marcarTodosSim()" class="w-full bg-neutral-950 hover:bg-neutral-800 text-green-400 border-2 border-green-600 font-bold py-3.5 px-6 rounded-xl shadow transition flex items-center justify-center gap-2.5 text-sm sm:text-base">
                         <i class="fa-solid fa-check-double"></i>
                         Marcar Todos "Sim"
                     </button>
-                    <button onclick="gerarPDF()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
-                        <i class="fa-solid fa-file-pdf text-xl"></i>
-                        Gerar Relatório em PDF
+                    <button onclick="limparTudoChamada()" class="w-full px-6 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2.5">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
                     </button>
                 </div>
             </section>
@@ -351,20 +351,20 @@
             </section>
 
             <!-- Botão de Gerar Relatório em PDF no fim da Aba 2 -->
-            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-center sm:text-left">
+            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col gap-5">
+                <div class="text-left border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-900">Exportar Quadro de Cargos</h3>
                     <p class="text-sm text-gray-500">Gere um relatório em PDF com a função de cada membro da unidade.</p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
-                    <button onclick="limparCargos()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eraser"></i>
-                        Limpar Tudo
-                    </button>
-                    <button onclick="gerarPDFCargos()" class="w-full sm:w-auto bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base border border-green-500">
+                <div class="flex flex-col w-full gap-3">
+                    <button onclick="gerarPDFCargos()" class="w-full bg-neutral-900 hover:bg-neutral-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-99 flex items-center justify-center gap-2.5 text-base border border-green-500">
                         <i class="fa-solid fa-file-pdf text-xl text-green-400"></i>
                         Gerar Relatório de Cargos (PDF)
+                    </button>
+                    <button onclick="limparCargos()" class="w-full px-6 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2.5">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
                     </button>
                 </div>
             </section>
@@ -509,20 +509,20 @@
             </section>
 
             <!-- Botão de Gerar Relatório em PDF no fim da Aba 3 -->
-            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-center sm:text-left">
+            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col gap-5">
+                <div class="text-left border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-900">Exportar Cantinho da Unidade</h3>
                     <p class="text-sm text-gray-500">Gere um relatório em PDF com as anotações e as atividades selecionadas.</p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
-                    <button onclick="limparTudoCantinho()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eraser"></i>
-                        Limpar Tudo
-                    </button>
-                    <button onclick="gerarPDFCantinho()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
+                <div class="flex flex-col w-full gap-3">
+                    <button onclick="gerarPDFCantinho()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-99 flex items-center justify-center gap-2.5 text-base">
                         <i class="fa-solid fa-file-pdf text-xl"></i>
                         Gerar Relatório em PDF
+                    </button>
+                    <button onclick="limparTudoCantinho()" class="w-full px-6 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2.5">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
                     </button>
                 </div>
             </section>
@@ -616,20 +616,20 @@
             </section>
 
             <!-- Botão de Gerar Relatório em PDF no fim da Aba 4 -->
-            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="text-center sm:text-left">
+            <section class="mt-10 bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col gap-5">
+                <div class="text-left border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-bold text-gray-900">Exportar Relatório do Secretário(a)</h3>
                     <p class="text-sm text-gray-500">Gere um relatório em PDF com as anotações, imagem e opções selecionadas.</p>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
-                    <button onclick="limparTudoSecretario()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eraser"></i>
-                        Limpar Tudo
-                    </button>
-                    <button onclick="gerarPDFSecretario()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2 text-base">
+                <div class="flex flex-col w-full gap-3">
+                    <button onclick="gerarPDFSecretario()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-99 flex items-center justify-center gap-2.5 text-base">
                         <i class="fa-solid fa-file-pdf text-xl"></i>
                         Gerar Relatório em PDF
+                    </button>
+                    <button onclick="limparTudoSecretario()" class="w-full px-6 py-3.5 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2.5">
+                        <i class="fa-solid fa-eraser"></i>
+                        Limpar Tudo
                     </button>
                 </div>
             </section>
