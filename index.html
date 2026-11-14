@@ -246,9 +246,16 @@
                         <i class="fa-solid fa-users-gear text-theme w-4"></i>
                         <span>Cargos da Unidade</span>
                     </button>
-                    <button onclick="alternarAba('cantinho')" id="item-menu-cantinho" class="w-full px-4 py-3.5 text-left text-sm font-bold text-white hover:bg-neutral-900 flex items-center gap-3 transition">
+                    <button onclick="alternarAba('cantinho')" id="item-menu-cantinho" class="w-full px-4 py-3.5 text-left text-sm font-bold text-white hover:bg-neutral-900 flex items-center gap-3 border-b border-neutral-800 transition">
                         <i class="fa-solid fa-campground text-theme w-4"></i>
                         <span>Cantinho da Unidade</span>
+                    </button>
+                    <button onclick="alternarAba('historico')" id="item-menu-historico" class="w-full px-4 py-3.5 text-left text-sm font-bold text-white hover:bg-neutral-900 flex items-center justify-between gap-3 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-clock-rotate-left text-theme w-4"></i>
+                            <span>Histórico de Relatórios</span>
+                        </div>
+                        <span id="badge-historico-unidade" class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-neutral-800 text-theme border border-neutral-700">0</span>
                     </button>
                 </div>
             </div>
@@ -610,83 +617,151 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ========== ABA 4: HISTÓRICO DA UNIDADE ========== -->
+            <div id="conteudo-historico" class="hidden space-y-6">
+                <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-title-dynamic text-xl font-black text-neutral-950 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-theme"></i>
+                            Histórico de Relatórios da Unidade
+                        </h2>
+                        <p class="text-muted-dynamic text-sm text-gray-600 mt-1">Veja os relatórios já emitidos, a data de emissão e baixe-os novamente em PDF.</p>
+                    </div>
+                    <div class="bg-theme-soft border border-theme px-4 py-2.5 rounded-xl text-center shrink-0">
+                        <span class="text-muted-dynamic block text-xs font-bold uppercase">Emitidos</span>
+                        <span id="contador-historico-unidade" class="text-title-dynamic text-xl font-black">0</span>
+                    </div>
+                </div>
+
+                <div id="lista-historico-unidade" class="space-y-4"></div>
+
+                <div id="acoes-historico-unidade" class="hidden surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                    <button onclick="solicitarLimparHistoricoUnidade()" class="btn-secondary-dynamic w-full py-3.5 px-6 rounded-xl border-2 border-red-300 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Limpar Histórico desta Unidade</span>
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- ==================== TELA 4: SECRETÁRIO(A) ==================== -->
         <section id="tela-secretario" class="hidden space-y-6">
-            <!-- Anotações + Imagem -->
-            <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 space-y-4">
-                <div class="flex items-center justify-between gap-3">
-                    <h2 class="text-title-dynamic text-xl font-black text-neutral-950 flex items-center gap-2">
-                        <i class="fa-solid fa-file-signature text-blue-600"></i>
-                        Secretário(a) — Anotações e Atas
-                    </h2>
+            <!-- Navegação entre Novo Registro e Histórico da Secretaria -->
+            <div class="surface-card bg-white rounded-2xl p-2 shadow-md border border-gray-200 grid grid-cols-2 gap-2">
+                <button id="tab-sec-registro" onclick="alternarAbaSecretario('registro')" class="py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Novo Registro</span>
+                </button>
+                <button id="tab-sec-historico" onclick="alternarAbaSecretario('historico')" class="btn-secondary-dynamic py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-700 hover:bg-gray-100">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-600"></i>
+                    <span>Histórico</span>
+                    <span id="badge-historico-secretario" class="text-[11px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">0</span>
+                </button>
+            </div>
+
+            <!-- Conteúdo 1: Novo Registro da Secretaria -->
+            <div id="secretario-conteudo-registro" class="space-y-6">
+                <!-- Anotações + Imagem -->
+                <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 space-y-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="text-title-dynamic text-xl font-black text-neutral-950 flex items-center gap-2">
+                            <i class="fa-solid fa-file-signature text-blue-600"></i>
+                            Secretário(a) — Anotações e Atas
+                        </h2>
+                    </div>
+
+                    <textarea id="anotacoes-secretario" rows="5" oninput="aoAlterarAnotacoesSecretario()"
+                        placeholder="Registre aqui os detalhes da reunião, decisões da diretoria, pautas com os pais..."
+                        class="input-dynamic w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl p-3.5 font-medium"></textarea>
+
+                    <!-- Anexo de Imagem -->
+                    <div>
+                        <input type="file" id="input-imagem-secretario" accept="image/*" class="hidden" onchange="aoSelecionarImagemSecretario(event)">
+                        <button onclick="document.getElementById('input-imagem-secretario').click()" class="btn-secondary-dynamic px-4 py-2.5 rounded-xl border-2 border-dashed border-blue-500 text-blue-600 font-bold text-sm hover:opacity-90 transition inline-flex items-center gap-2">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>Anexar Imagem</span>
+                        </button>
+
+                        <div id="preview-imagem-secretario-box" class="hidden mt-4 relative inline-block">
+                            <img id="preview-imagem-secretario" src="" alt="Imagem anexada" class="max-h-60 rounded-2xl border-2 border-blue-500 shadow-md object-contain">
+                            <button onclick="removerImagemSecretario()" title="Remover imagem" class="absolute -top-2.5 -right-2.5 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg flex items-center justify-center transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <textarea id="anotacoes-secretario" rows="5" oninput="aoAlterarAnotacoesSecretario()"
-                    placeholder="Registre aqui os detalhes da reunião, decisões da diretoria, pautas com os pais..."
-                    class="input-dynamic w-full bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl p-3.5 font-medium"></textarea>
+                <!-- Selecione (Reunião com os Pais, Reunião de Diretoria + Personalizadas) -->
+                <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 space-y-5">
+                    <div>
+                        <h3 class="text-title-dynamic text-lg font-black text-neutral-950 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-blue-600"></i>
+                            Selecione o Tipo de Registro
+                        </h3>
+                        <p class="text-muted-dynamic text-xs text-gray-500 mt-1">Toque nos cards para selecionar ou adicione outras opções abaixo.</p>
+                    </div>
 
-                <!-- Anexo de Imagem -->
-                <div>
-                    <input type="file" id="input-imagem-secretario" accept="image/*" class="hidden" onchange="aoSelecionarImagemSecretario(event)">
-                    <button onclick="document.getElementById('input-imagem-secretario').click()" class="btn-secondary-dynamic px-4 py-2.5 rounded-xl border-2 border-dashed border-blue-500 text-blue-600 font-bold text-sm hover:opacity-90 transition inline-flex items-center gap-2">
-                        <i class="fa-solid fa-camera"></i>
-                        <span>Anexar Imagem</span>
-                    </button>
+                    <div id="lista-opcoes-secretario" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
 
-                    <div id="preview-imagem-secretario-box" class="hidden mt-4 relative inline-block">
-                        <img id="preview-imagem-secretario" src="" alt="Imagem anexada" class="max-h-60 rounded-2xl border-2 border-blue-500 shadow-md object-contain">
-                        <button onclick="removerImagemSecretario()" title="Remover imagem" class="absolute -top-2.5 -right-2.5 w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg flex items-center justify-center transition">
-                            <i class="fa-solid fa-xmark"></i>
+                    <!-- Adicionar Nova Opção -->
+                    <div class="pt-4 border-t border-gray-200 dark:border-zinc-800">
+                        <label for="input-nova-opcao-secretario" class="text-title-dynamic block text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-2">
+                            Adicionar Outra Opção
+                        </label>
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <input type="text" id="input-nova-opcao-secretario" placeholder="Ex: Reunião de Planejamento, Investidura..."
+                                onkeydown="if(event.key === 'Enter') adicionarOpcaoSecretario()"
+                                class="input-dynamic flex-1 bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl p-3 font-semibold">
+                            <button onclick="adicionarOpcaoSecretario()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Adicionar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rodapé em Lista Vertical -->
+                <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                    <div class="mb-4">
+                        <h3 class="text-title-dynamic text-lg font-extrabold text-gray-900">Ações da Secretaria</h3>
+                        <p class="text-muted-dynamic text-sm text-gray-500">Gere o relatório oficial em PDF ou limpe os dados preenchidos.</p>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <button onclick="gerarPDFSecretario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                            <i class="fa-solid fa-file-pdf text-xl"></i>
+                            <span>Gerar Relatório em PDF</span>
+                        </button>
+                        <button onclick="limparSecretario()" class="btn-secondary-dynamic w-full py-3.5 px-6 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-eraser"></i>
+                            <span>Limpar Tudo</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Selecione (Reunião com os Pais, Reunião de Diretoria + Personalizadas) -->
-            <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 space-y-5">
-                <div>
-                    <h3 class="text-title-dynamic text-lg font-black text-neutral-950 flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-blue-600"></i>
-                        Selecione o Tipo de Registro
-                    </h3>
-                    <p class="text-muted-dynamic text-xs text-gray-500 mt-1">Toque nos cards para selecionar ou adicione outras opções abaixo.</p>
-                </div>
-
-                <div id="lista-opcoes-secretario" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-
-                <!-- Adicionar Nova Opção -->
-                <div class="pt-4 border-t border-gray-200 dark:border-zinc-800">
-                    <label for="input-nova-opcao-secretario" class="text-title-dynamic block text-xs font-extrabold text-gray-700 uppercase tracking-wider mb-2">
-                        Adicionar Outra Opção
-                    </label>
-                    <div class="flex flex-col sm:flex-row gap-2.5">
-                        <input type="text" id="input-nova-opcao-secretario" placeholder="Ex: Reunião de Planejamento, Investidura..."
-                            onkeydown="if(event.key === 'Enter') adicionarOpcaoSecretario()"
-                            class="input-dynamic flex-1 bg-gray-50 border-2 border-gray-300 text-gray-900 text-sm rounded-xl p-3 font-semibold">
-                        <button onclick="adicionarOpcaoSecretario()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>Adicionar</span>
-                        </button>
+            <!-- Conteúdo 2: Histórico da Secretaria -->
+            <div id="secretario-conteudo-historico" class="hidden space-y-6">
+                <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-title-dynamic text-xl font-black text-neutral-950 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-blue-600"></i>
+                            Histórico da Secretaria
+                        </h2>
+                        <p class="text-muted-dynamic text-sm text-gray-600 mt-1">Consulte os relatórios já emitidos pela secretaria e baixe-os novamente.</p>
+                    </div>
+                    <div class="bg-blue-50 dark:bg-zinc-900 border border-blue-200 dark:border-blue-500/40 px-4 py-2.5 rounded-xl text-center shrink-0">
+                        <span class="text-muted-dynamic block text-xs font-bold uppercase text-blue-800">Emitidos</span>
+                        <span id="contador-historico-secretario" class="text-title-dynamic text-xl font-black text-blue-950">0</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Rodapé em Lista Vertical -->
-            <div class="surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200">
-                <div class="mb-4">
-                    <h3 class="text-title-dynamic text-lg font-extrabold text-gray-900">Ações da Secretaria</h3>
-                    <p class="text-muted-dynamic text-sm text-gray-500">Gere o relatório oficial em PDF ou limpe os dados preenchidos.</p>
-                </div>
-                <div class="flex flex-col gap-3">
-                    <button onclick="gerarPDFSecretario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base">
-                        <i class="fa-solid fa-file-pdf text-xl"></i>
-                        <span>Gerar Relatório em PDF</span>
-                    </button>
-                    <button onclick="limparSecretario()" class="btn-secondary-dynamic w-full py-3.5 px-6 rounded-xl border-2 border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2 text-sm">
-                        <i class="fa-solid fa-eraser"></i>
-                        <span>Limpar Tudo</span>
+                <div id="lista-historico-secretario" class="space-y-4"></div>
+
+                <div id="acoes-historico-secretario" class="hidden surface-card bg-white rounded-2xl shadow-md p-6 border border-gray-200">
+                    <button onclick="solicitarLimparHistoricoSecretario()" class="btn-secondary-dynamic w-full py-3.5 px-6 rounded-xl border-2 border-red-300 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Limpar Histórico da Secretaria</span>
                     </button>
                 </div>
             </div>
@@ -860,8 +935,8 @@
             return {
                 membros: [...membros],
                 dataReuniao: obterDataHojeISO(),
-                chamada: {}, // { [idx]: { presenca: 'Sim'|'Não', ..., bemEstar: { humor: 1..5 } } }
-                cargos: {},  // { [idx]: "Cargo" }
+                chamada: {},
+                cargos: {},
                 cantinho: {
                     anotacoes: "",
                     imagem: null,
@@ -870,15 +945,17 @@
                     especialidadesSelecionadas: [],
                     livros: ["Livro do Ano - Desbravadores"],
                     livroSelecionado: ""
-                }
+                },
+                historico: []
             };
         }
 
         // ==================== ESTADO GLOBAL DA APLICAÇÃO ====================
         let estadoApp = {
-            telaPrincipal: "inicio", // "inicio" | "unidades" | "unidade" | "secretario"
+            telaPrincipal: "inicio",
             unidadeAtiva: "eliseu",
-            abaAtiva: "chamada",     // "chamada" | "cargos" | "cantinho"
+            abaAtiva: "chamada",
+            abaSecretarioAtiva: "registro",
             modoEscuro: false,
             unidades: {
                 ana: criarDadosIniciaisUnidade([]),
@@ -889,7 +966,8 @@
                 anotacoes: "",
                 imagem: null,
                 opcoesPersonalizadas: [],
-                selecionadas: []
+                selecionadas: [],
+                historico: []
             }
         };
 
@@ -898,7 +976,21 @@
             try {
                 window.localStorage.setItem(STORAGE_KEY, JSON.stringify(estadoApp));
             } catch (e) {
-                // Silencioso caso o navegador/iframe limite armazenamento
+                try {
+                    ["ana", "ester", "eliseu"].forEach(uid => {
+                        (estadoApp.unidades[uid].historico || []).forEach(item => {
+                            if (item.snapshot && item.snapshot.cantinho) {
+                                item.snapshot.cantinho.imagem = null;
+                            }
+                        });
+                    });
+                    (estadoApp.secretario.historico || []).forEach(item => {
+                        if (item.snapshot) item.snapshot.imagem = null;
+                    });
+                    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(estadoApp));
+                } catch (err2) {
+                    console.warn("Falha ao salvar estado", err2);
+                }
             }
         }
 
@@ -911,6 +1003,7 @@
                     estadoApp.telaPrincipal = parsed.telaPrincipal || "inicio";
                     estadoApp.unidadeAtiva = parsed.unidadeAtiva || "eliseu";
                     estadoApp.abaAtiva = parsed.abaAtiva || "chamada";
+                    estadoApp.abaSecretarioAtiva = parsed.abaSecretarioAtiva || "registro";
                     estadoApp.modoEscuro = Boolean(parsed.modoEscuro);
 
                     ["ana", "ester", "eliseu"].forEach(uid => {
@@ -923,7 +1016,8 @@
                                 cantinho: {
                                     ...base.cantinho,
                                     ...(uSalva.cantinho || {})
-                                }
+                                },
+                                historico: Array.isArray(uSalva.historico) ? uSalva.historico : []
                             };
                         }
                     });
@@ -931,198 +1025,159 @@
                     if (parsed.secretario) {
                         estadoApp.secretario = {
                             ...estadoApp.secretario,
-                            ...parsed.secretario
+                            ...parsed.secretario,
+                            historico: Array.isArray(parsed.secretario.historico) ? parsed.secretario.historico : []
                         };
                     }
                 }
             } catch (e) {
-                // Mantém estado padrão
+                console.warn("Erro ao carregar estado", e);
             }
         }
 
-        function getUnidadeAtual() {
-            return estadoApp.unidades[estadoApp.unidadeAtiva];
-        }
-
-        function getConfigUnidadeAtual() {
-            return CONFIG_UNIDADES[estadoApp.unidadeAtiva];
-        }
-
-        // ==================== INICIALIZAÇÃO ====================
-        document.addEventListener("DOMContentLoaded", () => {
-            carregarEstado();
-            configurarPWA();
-            aplicarModoEscuroUI();
-            atualizarEstatisticasInicio();
-            aplicarNavegacaoAtual();
-
-            // Fechar dropdown das 3 listras ao clicar fora
-            document.addEventListener("click", (e) => {
-                const nav = document.getElementById("nav-unidade-container");
-                const dropdown = document.getElementById("dropdown-menu-abas");
-                const seta = document.getElementById("seta-menu-abas");
-                if (nav && dropdown && !nav.contains(e.target)) {
-                    dropdown.classList.add("hidden");
-                    if (seta) seta.classList.remove("rotate-180");
-                }
-            });
-
-            window.addEventListener("online", atualizarStatusConexao);
-            window.addEventListener("offline", atualizarStatusConexao);
-            atualizarStatusConexao();
-        });
+        function getUnidadeAtual() { return estadoApp.unidades[estadoApp.unidadeAtiva]; }
+        function getConfigUnidadeAtual() { return CONFIG_UNIDADES[estadoApp.unidadeAtiva]; }
 
         // ==================== NAVEGAÇÃO E TEMAS ====================
-        function aplicarTemaVisual(classeTema) {
-            const body = document.getElementById("body-app");
-            body.classList.remove("tema-azul", "tema-rosa", "tema-roxo", "tema-verde");
-            body.classList.add(classeTema);
+        function aplicarTemaVisual(tema) {
+            document.body.classList.remove("tema-azul", "tema-rosa", "tema-roxo", "tema-verde");
+            document.body.classList.add(tema);
         }
 
-        function atualizarEstatisticasInicio() {
-            const anaLen = estadoApp.unidades.ana.membros.length;
-            const esterLen = estadoApp.unidades.ester.membros.length;
-            const eliseuLen = estadoApp.unidades.eliseu.membros.length;
-            const total = anaLen + esterLen + eliseuLen;
-
-            const statDbvs = document.getElementById("stat-total-dbvs");
-            if (statDbvs) statDbvs.textContent = total;
-
-            const statHoje = document.getElementById("stat-data-hoje");
-            if (statHoje) {
-                const hoje = new Date();
-                const d = String(hoje.getDate()).padStart(2, '0');
-                const m = String(hoje.getMonth() + 1).padStart(2, '0');
-                statHoje.textContent = `${d}/${m}`;
+        window.alternarModoEscuro = function() {
+            estadoApp.modoEscuro = !estadoApp.modoEscuro;
+            salvarEstado();
+            
+            const knob = document.getElementById("toggle-dark-knob");
+            const icon = document.getElementById("toggle-dark-icon");
+            
+            if (estadoApp.modoEscuro) {
+                document.body.classList.add("dark-mode");
+                knob.classList.replace("translate-x-0", "translate-x-6");
+                icon.className = "fa-solid fa-moon text-blue-900 text-xs";
+            } else {
+                document.body.classList.remove("dark-mode");
+                knob.classList.replace("translate-x-6", "translate-x-0");
+                icon.className = "fa-solid fa-sun text-amber-500 text-xs";
             }
-
-            const cAna = document.getElementById("count-membros-ana");
-            const cEster = document.getElementById("count-membros-ester");
-            const cEliseu = document.getElementById("count-membros-eliseu");
-            if (cAna) cAna.textContent = `${anaLen} ${anaLen === 1 ? 'desbravadora' : 'desbravadoras'}`;
-            if (cEster) cEster.textContent = `${esterLen} ${esterLen === 1 ? 'desbravadora' : 'desbravadoras'}`;
-            if (cEliseu) cEliseu.textContent = `${eliseuLen} ${eliseuLen === 1 ? 'desbravador' : 'desbravadores'}`;
-        }
-
-        function aplicarNavegacaoAtual() {
-            const telaInicio = document.getElementById("tela-inicio");
-            const telaUnidades = document.getElementById("tela-unidades");
-            const telaUnidadeDetalhe = document.getElementById("tela-unidade-detalhe");
-            const telaSecretario = document.getElementById("tela-secretario");
-
-            const btnVoltar = document.getElementById("btn-voltar-header");
-            const btnVoltarTexto = document.getElementById("btn-voltar-texto");
-            const btnRelGeral = document.getElementById("btn-relatorio-geral");
-            const navUnidade = document.getElementById("nav-unidade-container");
-
-            const logoImg = document.getElementById("header-logo-img");
-            const logoFallback = document.getElementById("header-logo-fallback");
-            const headerTitle = document.getElementById("header-title");
-            const headerSub = document.getElementById("header-subtitle");
-
-            // Oculta todas as telas
-            telaInicio.classList.add("hidden");
-            telaUnidades.classList.add("hidden");
-            telaUnidadeDetalhe.classList.add("hidden");
-            telaSecretario.classList.add("hidden");
-            btnRelGeral.classList.add("hidden");
-            navUnidade.classList.add("hidden");
-
-            logoImg.classList.remove("hidden");
-            logoFallback.classList.add("hidden");
-
-            if (estadoApp.telaPrincipal === "inicio") {
-                aplicarTemaVisual("tema-azul");
-                telaInicio.classList.remove("hidden");
-                btnVoltar.classList.add("hidden");
-                logoImg.src = "aazizicon.png";
-                headerTitle.textContent = "Aaziz";
-                headerSub.textContent = "Clube de Desbravadores";
-                atualizarEstatisticasInicio();
-
-            } else if (estadoApp.telaPrincipal === "unidades") {
-                aplicarTemaVisual("tema-azul");
-                telaUnidades.classList.remove("hidden");
-                btnVoltar.classList.remove("hidden");
-                btnVoltarTexto.textContent = "Início";
-                logoImg.src = "aazizicon.png";
-                headerTitle.textContent = "Unidades";
-                headerSub.textContent = "Clube de Desbravadores Aaziz";
-                atualizarEstatisticasInicio();
-
-            } else if (estadoApp.telaPrincipal === "secretario") {
-                aplicarTemaVisual("tema-azul");
-                telaSecretario.classList.remove("hidden");
-                btnVoltar.classList.remove("hidden");
-                btnVoltarTexto.textContent = "Início";
-                logoImg.src = "aazizicon.png";
-                headerTitle.textContent = "Secretário(a)";
-                headerSub.textContent = "Clube de Desbravadores Aaziz";
-                renderizarSecretario();
-
-            } else if (estadoApp.telaPrincipal === "unidade") {
-                const cfg = getConfigUnidadeAtual();
-                aplicarTemaVisual(cfg.tema);
-                telaUnidadeDetalhe.classList.remove("hidden");
-                btnVoltar.classList.remove("hidden");
-                btnVoltarTexto.textContent = "Unidades";
-                btnRelGeral.classList.remove("hidden");
-                navUnidade.classList.remove("hidden");
-
-                logoImg.src = cfg.icone;
-                headerTitle.textContent = cfg.nome;
-                headerSub.textContent = "Clube de Desbravadores Aaziz";
-
-                renderizarUnidadeCompleta();
-                alternarAba(estadoApp.abaAtiva, false);
-            }
-        }
+        };
 
         window.irParaInicio = function() {
             estadoApp.telaPrincipal = "inicio";
             salvarEstado();
-            aplicarNavegacaoAtual();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            aplicarTemaVisual("tema-azul");
+            
+            document.getElementById("tela-inicio").classList.remove("hidden");
+            document.getElementById("tela-unidades").classList.add("hidden");
+            document.getElementById("tela-unidade-detalhe").classList.add("hidden");
+            document.getElementById("tela-secretario").classList.add("hidden");
+            
+            document.getElementById("btn-voltar-header").classList.add("hidden");
+            document.getElementById("header-logo-img").src = "aazizicon.png";
+            document.getElementById("header-title").textContent = "Aaziz";
+            document.getElementById("header-subtitle").textContent = "Clube de Desbravadores";
+            document.getElementById("btn-relatorio-geral").classList.add("hidden");
+            document.getElementById("nav-unidade-container").classList.add("hidden");
+
+            // Atualiza status dinâmico na home
+            let totalDbv = 0;
+            ["ana", "ester", "eliseu"].forEach(u => totalDbv += estadoApp.unidades[u].membros.length);
+            document.getElementById("stat-total-dbvs").textContent = totalDbv;
+            document.getElementById("stat-data-hoje").textContent = formatarDataBR(obterDataHojeISO()).substring(0, 5);
         };
 
         window.irParaSelecaoUnidades = function() {
             estadoApp.telaPrincipal = "unidades";
             salvarEstado();
-            aplicarNavegacaoAtual();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            aplicarTemaVisual("tema-azul");
+            
+            document.getElementById("tela-inicio").classList.add("hidden");
+            document.getElementById("tela-unidades").classList.remove("hidden");
+            document.getElementById("tela-unidade-detalhe").classList.add("hidden");
+            document.getElementById("tela-secretario").classList.add("hidden");
+            
+            document.getElementById("btn-voltar-header").classList.remove("hidden");
+            document.getElementById("btn-voltar-texto").textContent = "Início";
+            document.getElementById("header-logo-img").src = "aazizicon.png";
+            document.getElementById("header-title").textContent = "Unidades";
+            document.getElementById("header-subtitle").textContent = "Clube de Desbravadores Aaziz";
+            document.getElementById("btn-relatorio-geral").classList.add("hidden");
+            document.getElementById("nav-unidade-container").classList.add("hidden");
+            
+            document.getElementById("count-membros-ana").textContent = `${estadoApp.unidades.ana.membros.length} desbravadoras`;
+            document.getElementById("count-membros-ester").textContent = `${estadoApp.unidades.ester.membros.length} desbravadoras`;
+            document.getElementById("count-membros-eliseu").textContent = `${estadoApp.unidades.eliseu.membros.length} desbravadores`;
+        };
+
+        window.abrirUnidade = function(id) {
+            estadoApp.telaPrincipal = "unidade";
+            estadoApp.unidadeAtiva = id;
+            estadoApp.abaAtiva = "chamada";
+            salvarEstado();
+            
+            const cfg = CONFIG_UNIDADES[id];
+            aplicarTemaVisual(cfg.tema);
+            
+            document.getElementById("tela-inicio").classList.add("hidden");
+            document.getElementById("tela-unidades").classList.add("hidden");
+            document.getElementById("tela-secretario").classList.add("hidden");
+            document.getElementById("tela-unidade-detalhe").classList.remove("hidden");
+            
+            document.getElementById("btn-voltar-header").classList.remove("hidden");
+            document.getElementById("btn-voltar-texto").textContent = "Unidades";
+            document.getElementById("header-logo-img").src = cfg.icone;
+            document.getElementById("header-title").textContent = cfg.nome;
+            document.getElementById("header-subtitle").textContent = "Sistema de Gestão da Unidade";
+            document.getElementById("btn-relatorio-geral").classList.remove("hidden");
+            document.getElementById("nav-unidade-container").classList.remove("hidden");
+            
+            renderizarUnidadeCompleta();
+            alternarAba("chamada", true);
         };
 
         window.irParaSecretario = function() {
             estadoApp.telaPrincipal = "secretario";
             salvarEstado();
-            aplicarNavegacaoAtual();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        };
-
-        window.abrirUnidade = function(unidadeId) {
-            estadoApp.unidadeAtiva = unidadeId;
-            estadoApp.telaPrincipal = "unidade";
-            salvarEstado();
-            aplicarNavegacaoAtual();
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            aplicarTemaVisual("tema-azul");
+            
+            document.getElementById("tela-inicio").classList.add("hidden");
+            document.getElementById("tela-unidades").classList.add("hidden");
+            document.getElementById("tela-unidade-detalhe").classList.add("hidden");
+            document.getElementById("tela-secretario").classList.remove("hidden");
+            
+            document.getElementById("btn-voltar-header").classList.remove("hidden");
+            document.getElementById("btn-voltar-texto").textContent = "Início";
+            document.getElementById("header-logo-img").src = "aazizicon.png";
+            document.getElementById("header-title").textContent = "Secretário(a)";
+            document.getElementById("header-subtitle").textContent = "Clube de Desbravadores Aaziz";
+            document.getElementById("btn-relatorio-geral").classList.add("hidden");
+            document.getElementById("nav-unidade-container").classList.add("hidden");
+            
+            renderizarSecretario();
+            alternarAbaSecretario(estadoApp.abaSecretarioAtiva || "registro");
         };
 
         window.voltarTela = function() {
-            if (estadoApp.telaPrincipal === "unidade") {
-                irParaSelecaoUnidades();
-            } else {
-                irParaInicio();
-            }
+            if (estadoApp.telaPrincipal === "unidades" || estadoApp.telaPrincipal === "secretario") irParaInicio();
+            else if (estadoApp.telaPrincipal === "unidade") irParaSelecaoUnidades();
         };
 
-        // ==================== MENU DE 3 LISTRAS E ABAS ====================
-        window.toggleMenuAbas = function(event) {
-            if (event) event.stopPropagation();
+        window.toggleMenuAbas = function(e) {
+            e.stopPropagation();
             const dropdown = document.getElementById("dropdown-menu-abas");
             const seta = document.getElementById("seta-menu-abas");
             dropdown.classList.toggle("hidden");
             seta.classList.toggle("rotate-180");
         };
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById("dropdown-menu-abas");
+            const btnMenu = document.getElementById("btn-menu-abas");
+            if (dropdown && !dropdown.classList.contains("hidden") && btnMenu && !btnMenu.contains(e.target)) {
+                dropdown.classList.add("hidden");
+                document.getElementById("seta-menu-abas").classList.remove("rotate-180");
+            }
+        });
 
         window.alternarAba = function(aba, fecharMenu = true) {
             estadoApp.abaAtiva = aba;
@@ -1131,13 +1186,15 @@
             const conteudos = {
                 chamada: document.getElementById("conteudo-chamada"),
                 cargos: document.getElementById("conteudo-cargos"),
-                cantinho: document.getElementById("conteudo-cantinho")
+                cantinho: document.getElementById("conteudo-cantinho"),
+                historico: document.getElementById("conteudo-historico")
             };
 
             const nomesAbas = {
                 chamada: "Chamada e Avaliação",
                 cargos: "Cargos da Unidade",
-                cantinho: "Cantinho da Unidade"
+                cantinho: "Cantinho da Unidade",
+                historico: "Histórico de Relatórios"
             };
 
             Object.keys(conteudos).forEach(k => {
@@ -1151,6 +1208,9 @@
                 }
             });
 
+            if (aba === "historico") renderizarHistoricoUnidade();
+            if (aba === "chamada") atualizarContadoresChamada();
+
             const labelAba = document.getElementById("nome-aba-atual");
             if (labelAba) labelAba.textContent = nomesAbas[aba] || "Chamada e Avaliação";
 
@@ -1162,38 +1222,6 @@
             }
         };
 
-        // ==================== MODO ESCURO ====================
-        window.alternarModoEscuro = function() {
-            estadoApp.modoEscuro = !estadoApp.modoEscuro;
-            salvarEstado();
-            aplicarModoEscuroUI();
-        };
-
-        function aplicarModoEscuroUI() {
-            const body = document.getElementById("body-app");
-            const toggleBtn = document.getElementById("toggle-dark-mode");
-            const knob = document.getElementById("toggle-dark-knob");
-            const icon = document.getElementById("toggle-dark-icon");
-
-            if (estadoApp.modoEscuro) {
-                body.classList.add("dark-mode");
-                toggleBtn.setAttribute("aria-checked", "true");
-                toggleBtn.classList.replace("bg-neutral-800", "bg-theme");
-                knob.classList.replace("translate-x-0", "translate-x-6");
-                knob.classList.replace("bg-white", "bg-neutral-950");
-                icon.className = "fa-solid fa-moon text-blue-300 text-xs";
-            } else {
-                body.classList.remove("dark-mode");
-                toggleBtn.setAttribute("aria-checked", "false");
-                toggleBtn.classList.remove("bg-theme");
-                toggleBtn.classList.add("bg-neutral-800");
-                knob.classList.replace("translate-x-6", "translate-x-0");
-                knob.classList.replace("bg-neutral-950", "bg-white");
-                icon.className = "fa-solid fa-sun text-amber-500 text-xs";
-            }
-        }
-
-        // ==================== RENDERIZAÇÃO DA UNIDADE ATIVA ====================
         function renderizarUnidadeCompleta() {
             const u = getUnidadeAtual();
             document.getElementById("data-reuniao").value = u.dataReuniao || obterDataHojeISO();
@@ -1204,1186 +1232,878 @@
             renderizarCargos();
             atualizarContadorCargos();
             renderizarCantinho();
+            renderizarHistoricoUnidade();
         }
 
-        // ==================== ABA 1: CHAMADA, BEM-ESTAR E MEMBROS ====================
-        window.aoAlterarDataReuniao = function() {
-            const u = getUnidadeAtual();
-            u.dataReuniao = document.getElementById("data-reuniao").value;
-            salvarEstado();
-        };
-
-        window.adicionarDesbravador = function() {
-            const input = document.getElementById("input-novo-dbv");
-            const nome = input.value.trim().toUpperCase();
-            if (!nome) {
-                mostrarNotificacao("Digite o nome do(a) desbravador(a).", "erro");
-                input.focus();
-                return;
-            }
-            const u = getUnidadeAtual();
-            if (u.membros.includes(nome)) {
-                mostrarNotificacao("Este nome já está na lista da unidade.", "erro");
-                return;
-            }
-            u.membros.push(nome);
-            input.value = "";
-            salvarEstado();
-            atualizarEstatisticasInicio();
-            renderizarUnidadeCompleta();
-            mostrarNotificacao(`${nome} adicionado(a) à unidade!`, "sucesso");
-        };
-
-        window.solicitarRemoverDesbravador = function(index) {
-            const u = getUnidadeAtual();
-            const nome = u.membros[index];
-            abrirModalConfirmacao(
-                "Remover Desbravador(a)",
-                `Deseja remover "${nome}" desta unidade?`,
-                () => {
-                    u.membros.splice(index, 1);
-                    // Reindexar chamada e cargos
-                    const novaChamada = {};
-                    const novosCargos = {};
-                    u.membros.forEach((_, novoIdx) => {
-                        const antigoIdx = novoIdx >= index ? novoIdx + 1 : novoIdx;
-                        if (u.chamada[antigoIdx]) novaChamada[novoIdx] = u.chamada[antigoIdx];
-                        if (u.cargos[antigoIdx]) novosCargos[novoIdx] = u.cargos[antigoIdx];
-                    });
-                    u.chamada = novaChamada;
-                    u.cargos = novosCargos;
-                    salvarEstado();
-                    atualizarEstatisticasInicio();
-                    renderizarUnidadeCompleta();
-                    mostrarNotificacao("Desbravador(a) removido(a).");
-                }
-            );
-        };
-
+        // ==================== ABA 1: CHAMADA ====================
         function renderizarListaChamada() {
             const u = getUnidadeAtual();
             const container = document.getElementById("lista-desbravadores");
             container.innerHTML = "";
 
             if (u.membros.length === 0) {
-                container.innerHTML = `
-                    <div class="surface-card bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-300">
-                        <i class="fa-solid fa-users-slash text-4xl text-theme mb-3"></i>
-                        <h3 class="text-title-dynamic text-lg font-extrabold text-gray-800">Nenhum membro cadastrado ainda</h3>
-                        <p class="text-muted-dynamic text-sm text-gray-500 mt-1">Use o campo acima para adicionar os(as) desbravadores(as) desta unidade.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="surface-card text-center p-8 bg-white border border-gray-200 rounded-2xl shadow-sm text-gray-500 font-bold">Nenhum membro cadastrado nesta unidade.</div>`;
                 return;
             }
 
-            u.membros.forEach((nome, index) => {
-                const reg = u.chamada[index] || {};
-                const bemEstar = reg.bemEstar || {};
+            u.membros.forEach((nome, idx) => {
+                const num = idx + 1;
+                const reg = u.chamada[idx] || {};
+                const be = reg.bemEstar || {};
                 const isFalta = reg.presenca === "Não";
 
-                const card = document.createElement("div");
-                card.className = "surface-card bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-200 overflow-hidden";
-
-                const htmlCriterios = CRITERIOS.map(crit => {
-                    const isPresenca = crit.id === "presenca";
-                    const valAtual = reg[crit.id] || "";
-                    const colSpan = isPresenca ? "md:col-span-2 bg-theme-soft border-theme/40" : "surface-subcard bg-gray-50 border-gray-200";
-                    const disabledAttr = (!isPresenca && isFalta) ? "disabled" : "";
-                    const bloqueadoClass = (!isPresenca && isFalta) ? "opacity-40 pointer-events-none" : "";
-
+                const critHTML = CRITERIOS.map(crit => {
+                    const chkSim = reg[crit.id] === "Sim" ? "checked" : "";
+                    const chkNao = reg[crit.id] === "Não" ? "checked" : "";
+                    const dis = (isFalta && crit.id !== "presenca") ? "disabled" : "";
+                    
                     return `
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 rounded-xl border gap-3 ${colSpan} ${bloqueadoClass}">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 rounded-xl border gap-3 ${crit.id === 'presenca' ? 'md:col-span-2 bg-theme-soft border-theme/40' : 'bg-gray-50 border-gray-100'} ${dis ? 'opacity-45 pointer-events-none' : ''}" id="container-${idx}-${crit.id}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-neutral-900 text-theme flex items-center justify-center shrink-0">
+                                <i class="fa-solid ${crit.icon} text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-title-dynamic font-semibold text-gray-800 text-sm sm:text-base">${crit.label}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end sm:self-center">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="dbv_${idx}_${crit.id}" value="Sim" class="sr-only radio-btn" onchange="aoAlterarOpcao(${idx}, '${crit.id}', 'Sim')" ${chkSim} ${dis}>
+                                <span class="label-sim inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-theme select-none"><i class="fa-solid fa-check mr-1.5"></i> Sim</span>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="dbv_${idx}_${crit.id}" value="Não" class="sr-only radio-btn" onchange="aoAlterarOpcao(${idx}, '${crit.id}', 'Não')" ${chkNao} ${dis}>
+                                <span class="label-nao inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-red-500 select-none"><i class="fa-solid fa-xmark mr-1.5"></i> Não</span>
+                            </label>
+                        </div>
+                    </div>`;
+                }).join("");
+
+                const beHTML = INDICADORES_BEM_ESTAR.map(ind => {
+                    const val = be[ind.id] || 0;
+                    return `
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col justify-between ${isFalta ? 'opacity-45 pointer-events-none' : ''}">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid ${ind.icon} text-theme"></i>
+                            <span class="text-xs font-bold text-gray-700 uppercase">${ind.label}</span>
+                        </div>
+                        <div class="flex justify-between gap-1">
+                            ${[1,2,3,4,5].map(n => `
+                                <button onclick="aoAlterarBemEstar(${idx}, '${ind.id}', ${n})" class="escala-btn w-7 h-7 rounded bg-white border border-gray-300 text-xs font-bold text-gray-600 hover:border-theme ${val === n ? 'ativo' : ''}">
+                                    ${n}
+                                </button>
+                            `).join("")}
+                        </div>
+                    </div>`;
+                }).join("");
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="surface-card bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-200 overflow-hidden">
+                        <div class="bg-gradient-to-r from-neutral-950 to-neutral-800 px-5 py-3.5 flex items-center justify-between border-b-2 border-theme">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg ${isPresenca ? 'bg-neutral-950 text-theme' : 'bg-theme text-white'} flex items-center justify-center shrink-0">
-                                    <i class="fa-solid ${crit.icon} text-sm"></i>
-                                </div>
-                                <div>
-                                    <span class="text-title-dynamic font-bold text-gray-800 text-sm">${crit.label}</span>
-                                    ${isPresenca ? '<span class="text-muted-dynamic block text-xs text-gray-600">Se "Não", os demais itens serão bloqueados</span>' : ''}
-                                </div>
+                                <span class="w-7 h-7 rounded-full bg-theme text-white font-extrabold text-sm flex items-center justify-center shrink-0">${num}</span>
+                                <h2 class="text-white font-bold text-base sm:text-lg tracking-wide">${nome}</h2>
                             </div>
-
-                            <div class="flex items-center gap-2 self-end sm:self-center">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="dbv_${index}_${crit.id}" value="Sim" ${valAtual === "Sim" ? "checked" : ""} ${disabledAttr}
-                                        class="sr-only radio-btn" onchange="aoAlterarOpcao(${index}, '${crit.id}', 'Sim')">
-                                    <span class="btn-secondary-dynamic label-sim inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-xs sm:text-sm transition select-none">
-                                        <i class="fa-solid fa-check mr-1"></i> Sim
-                                    </span>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="dbv_${index}_${crit.id}" value="Não" ${valAtual === "Não" ? "checked" : ""} ${disabledAttr}
-                                        class="sr-only radio-btn" onchange="aoAlterarOpcao(${index}, '${crit.id}', 'Não')">
-                                    <span class="btn-secondary-dynamic label-nao inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-xs sm:text-sm transition select-none">
-                                        <i class="fa-solid fa-xmark mr-1"></i> Não
-                                    </span>
-                                </label>
-                            </div>
+                            <button onclick="solicitarRemoverDesbravador(${idx})" class="text-gray-400 hover:text-red-500 p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
-                    `;
-                }).join("");
-
-                const htmlBemEstar = INDICADORES_BEM_ESTAR.map(ind => {
-                    const notaAtual = bemEstar[ind.id] || 0;
-                    const botoesNotas = [1, 2, 3, 4, 5].map(n => `
-                        <button type="button" onclick="aoAlterarBemEstar(${index}, '${ind.id}', ${n})"
-                            class="btn-secondary-dynamic escala-btn ${notaAtual === n ? 'ativo' : ''} w-9 h-9 rounded-lg border-2 border-gray-300 bg-white text-gray-700 font-extrabold text-xs flex items-center justify-center">
-                            ${n}
-                        </button>
-                    `).join("");
-
-                    return `
-                        <div class="surface-subcard bg-gray-50 border border-gray-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid ${ind.icon} text-theme text-base w-5 text-center"></i>
-                                <div>
-                                    <span class="text-title-dynamic block font-bold text-xs sm:text-sm text-gray-800">${ind.label}</span>
-                                    <span class="text-muted-dynamic block text-[11px] text-gray-500">${ind.desc}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1.5 self-end sm:self-center">
-                                ${botoesNotas}
-                            </div>
-                        </div>
-                    `;
-                }).join("");
-
-                card.innerHTML = `
-                    <div class="bg-gradient-to-r from-neutral-950 to-neutral-800 px-5 py-3.5 flex items-center justify-between gap-2 border-b-2 border-theme">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-7 h-7 rounded-full bg-theme text-white font-black text-xs flex items-center justify-center shrink-0">
-                                ${index + 1}
-                            </span>
-                            <h3 class="text-white font-bold text-sm sm:text-base truncate">${nome}</h3>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span id="status-badge-${index}" class="text-xs font-bold px-2.5 py-1 rounded-full bg-neutral-900 text-neutral-300 border border-neutral-700">
-                                Pendente
-                            </span>
-                            <button onclick="solicitarRemoverDesbravador(${index})" title="Remover desbravador(a)" class="w-7 h-7 rounded-lg bg-neutral-900 hover:bg-red-600 text-neutral-400 hover:text-white transition flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                        <div class="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-3">${critHTML}</div>
+                        <div class="p-4 sm:p-5 border-t border-gray-200 bg-white/50">
+                            <h4 class="text-sm font-extrabold text-gray-800 mb-3"><i class="fa-solid fa-heart-pulse text-theme mr-1"></i> Como estava no dia da reunião (1 a 5)</h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="bemestar-${idx}">${beHTML}</div>
                         </div>
                     </div>
-
-                    <div class="p-4 sm:p-5 space-y-5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            ${htmlCriterios}
-                        </div>
-
-                        <!-- Seção Como estava no dia da reunião (1 a 5) -->
-                        <div class="pt-4 border-t border-gray-200 dark:border-zinc-800 ${isFalta ? 'opacity-40 pointer-events-none' : ''}">
-                            <div class="flex items-center gap-2 mb-3">
-                                <i class="fa-solid fa-heart-pulse text-theme"></i>
-                                <span class="text-title-dynamic text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-700">
-                                    Como estava no dia da reunião (1 a 5)
-                                </span>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                                ${htmlBemEstar}
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                container.appendChild(card);
+                `);
             });
         }
 
-        window.aoAlterarOpcao = function(index, critId, valor) {
-            const u = getUnidadeAtual();
-            if (!u.chamada[index]) u.chamada[index] = { bemEstar: {} };
-            u.chamada[index][critId] = valor;
-
-            if (critId === "presenca" && valor === "Não") {
-                CRITERIOS.forEach(c => {
-                    if (c.id !== "presenca") delete u.chamada[index][c.id];
-                });
-                u.chamada[index].bemEstar = {};
-            }
-
+        window.aoAlterarDataReuniao = function() {
+            getUnidadeAtual().dataReuniao = document.getElementById("data-reuniao").value;
             salvarEstado();
-            renderizarListaChamada();
+        };
+
+        window.aoAlterarOpcao = function(idx, critId, valor) {
+            const u = getUnidadeAtual();
+            if (!u.chamada[idx]) u.chamada[idx] = { bemEstar: {} };
+            u.chamada[idx][critId] = valor;
+            
+            if (critId === "presenca") {
+                aplicarBloqueioCriterios(idx, valor === "Não");
+            }
+            salvarEstado();
             atualizarContadoresChamada();
         };
 
-        window.aoAlterarBemEstar = function(index, indId, nota) {
+        window.aoAlterarBemEstar = function(idx, indicadorId, valor) {
             const u = getUnidadeAtual();
-            if (!u.chamada[index]) u.chamada[index] = { bemEstar: {} };
-            if (!u.chamada[index].bemEstar) u.chamada[index].bemEstar = {};
-
-            // Permite desmarcar clicando novamente na mesma nota
-            if (u.chamada[index].bemEstar[indId] === nota) {
-                delete u.chamada[index].bemEstar[indId];
+            if (!u.chamada[idx]) u.chamada[idx] = { bemEstar: {} };
+            if (!u.chamada[idx].bemEstar) u.chamada[idx].bemEstar = {};
+            
+            // Toggle
+            if (u.chamada[idx].bemEstar[indicadorId] === valor) {
+                u.chamada[idx].bemEstar[indicadorId] = 0;
             } else {
-                u.chamada[index].bemEstar[indId] = nota;
+                u.chamada[idx].bemEstar[indicadorId] = valor;
             }
-
+            
             salvarEstado();
-            renderizarListaChamada();
-            atualizarContadoresChamada();
+            renderizarListaChamada(); // re-render just to update active buttons quickly
         };
 
-        function atualizarContadoresChamada() {
+        window.aplicarBloqueioCriterios = function(idx, bloquear) {
             const u = getUnidadeAtual();
-            let avaliadosCompletos = 0;
+            if (bloquear && u.chamada[idx]) {
+                CRITERIOS.forEach(c => { if(c.id !== "presenca") delete u.chamada[idx][c.id]; });
+                u.chamada[idx].bemEstar = {};
+            }
+            salvarEstado();
+            renderizarListaChamada();
+        };
 
-            u.membros.forEach((_, index) => {
-                const reg = u.chamada[index] || {};
-                const badge = document.getElementById(`status-badge-${index}`);
-                if (!badge) return;
-
-                if (reg.presenca === "Não") {
-                    avaliadosCompletos++;
-                    badge.textContent = "Faltou";
-                    badge.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-red-600 text-white";
-                    return;
-                }
-
-                let marcados = 0;
-                CRITERIOS.forEach(c => {
-                    if (reg[c.id]) marcados++;
-                });
-
-                if (marcados === CRITERIOS.length) {
-                    avaliadosCompletos++;
-                    badge.textContent = "Concluído";
-                    badge.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-theme text-white";
-                } else if (marcados > 0) {
-                    badge.textContent = `${marcados}/${CRITERIOS.length}`;
-                    badge.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500 text-neutral-950";
-                } else {
-                    badge.textContent = "Pendente";
-                    badge.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-neutral-900 text-neutral-300 border border-neutral-700";
-                }
+        window.atualizarContadoresChamada = function() {
+            const u = getUnidadeAtual();
+            let av = 0;
+            u.membros.forEach((_, idx) => {
+                const reg = u.chamada[idx];
+                if (reg && reg.presenca === "Não") av++;
+                else if (reg && CRITERIOS.every(c => reg[c.id])) av++;
             });
-
-            document.getElementById("total-desbravadores").textContent = u.membros.length;
-            document.getElementById("total-avaliados").textContent = `${avaliadosCompletos}/${u.membros.length}`;
-        }
+            const el = document.getElementById("total-avaliados");
+            if (el) el.textContent = `${av}/${u.membros.length}`;
+        };
 
         window.marcarTodosSim = function() {
             const u = getUnidadeAtual();
-            if (u.membros.length === 0) {
-                mostrarNotificacao("Adicione desbravadores primeiro.", "erro");
-                return;
-            }
-            u.membros.forEach((_, index) => {
-                if (!u.chamada[index]) u.chamada[index] = { bemEstar: {} };
-                CRITERIOS.forEach(c => {
-                    u.chamada[index][c.id] = "Sim";
-                });
+            u.membros.forEach((_, idx) => {
+                if (!u.chamada[idx]) u.chamada[idx] = { bemEstar: {} };
+                CRITERIOS.forEach(c => u.chamada[idx][c.id] = "Sim");
             });
             salvarEstado();
             renderizarListaChamada();
             atualizarContadoresChamada();
-            mostrarNotificacao("Todos os critérios foram marcados como 'Sim'!", "sucesso");
+            mostrarNotificacao("Todos marcados como Sim.", "sucesso");
         };
 
         window.limparFormulario = function() {
-            const u = getUnidadeAtual();
-            u.chamada = {};
-            salvarEstado();
-            renderizarListaChamada();
-            atualizarContadoresChamada();
-            mostrarNotificacao("Todas as marcações da chamada foram limpas.");
+            abrirModalConfirmacao("Limpar Chamada", "Deseja remover todas as marcações de chamada e bem-estar desta unidade?", () => {
+                getUnidadeAtual().chamada = {};
+                salvarEstado();
+                renderizarListaChamada();
+                atualizarContadoresChamada();
+                mostrarNotificacao("Chamada limpa.");
+            });
         };
 
-        // ==================== ABA 2: CARGOS DA UNIDADE ====================
+        window.adicionarDesbravador = function() {
+            const input = document.getElementById("input-novo-dbv");
+            const nome = input.value.trim().toUpperCase();
+            if (!nome) return;
+            const u = getUnidadeAtual();
+            u.membros.push(nome);
+            u.cargos[u.membros.length - 1] = "Sem Cargo";
+            input.value = "";
+            salvarEstado();
+            renderizarUnidadeCompleta();
+            mostrarNotificacao("Desbravador(a) adicionado(a) com sucesso!", "sucesso");
+        };
+
+        window.solicitarRemoverDesbravador = function(idx) {
+            const u = getUnidadeAtual();
+            abrirModalConfirmacao("Remover Membro", `Deseja remover ${u.membros[idx]} da unidade?`, () => {
+                u.membros.splice(idx, 1);
+                // re-shift states
+                const newChamada = {};
+                const newCargos = {};
+                for(let i=0; i<u.membros.length; i++) {
+                    const oldIdx = i >= idx ? i + 1 : i;
+                    if (u.chamada[oldIdx]) newChamada[i] = u.chamada[oldIdx];
+                    if (u.cargos[oldIdx]) newCargos[i] = u.cargos[oldIdx];
+                }
+                u.chamada = newChamada;
+                u.cargos = newCargos;
+                salvarEstado();
+                renderizarUnidadeCompleta();
+                mostrarNotificacao("Membro removido.");
+            });
+        };
+
+        // ==================== ABA 2: CARGOS ====================
         function renderizarCargos() {
             const u = getUnidadeAtual();
             const container = document.getElementById("lista-cargos");
-            container.innerHTML = "";
-
+            if (!container) return;
+            
             if (u.membros.length === 0) {
-                container.innerHTML = `
-                    <div class="p-8 text-center">
-                        <p class="text-muted-dynamic text-sm text-gray-500">Nenhum membro cadastrado nesta unidade ainda.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold">Nenhum membro cadastrado.</div>`;
                 return;
             }
 
-            u.membros.forEach((nome, index) => {
-                const cargoAtual = u.cargos[index] || "Sem Cargo";
-                const row = document.createElement("div");
-                row.className = "p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
-
-                const opcoesHTML = CARGOS_UNIDADE.map(c =>
-                    `<option value="${c}" ${cargoAtual === c ? "selected" : ""}>${c}</option>`
-                ).join("");
-
-                row.innerHTML = `
+            container.innerHTML = u.membros.map((nome, idx) => {
+                const val = u.cargos[idx] || "Sem Cargo";
+                const isSelected = val !== "Sem Cargo";
+                const opcoes = CARGOS_UNIDADE.map(c => `<option value="${c}" ${c === val ? 'selected' : ''}>${c}</option>`).join("");
+                
+                return `
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 last:border-0 ${isSelected ? 'bg-theme-soft/30' : ''}">
                     <div class="flex items-center gap-3">
-                        <span class="w-7 h-7 rounded-full bg-neutral-950 text-theme font-black text-xs flex items-center justify-center shrink-0">
-                            ${index + 1}
-                        </span>
-                        <span class="text-title-dynamic font-bold text-gray-800 text-sm">${nome}</span>
+                        <span class="w-7 h-7 rounded-full bg-neutral-900 text-theme font-extrabold text-xs flex items-center justify-center shrink-0">${idx + 1}</span>
+                        <span class="font-bold text-gray-800 text-sm sm:text-base">${nome}</span>
                     </div>
-                    <div class="w-full sm:w-64">
-                        <select id="cargo-dbv-${index}" onchange="aoAlterarCargo(${index}, this.value)"
-                            class="input-dynamic w-full bg-gray-50 border-2 ${cargoAtual !== 'Sem Cargo' ? 'border-theme' : 'border-gray-300'} text-gray-800 text-sm font-bold rounded-xl p-2.5 cursor-pointer">
-                            ${opcoesHTML}
-                        </select>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
+                    <select onchange="aoAlterarCargo(${idx}, this.value)" class="w-full sm:w-64 bg-gray-50 border-2 ${isSelected ? 'border-theme bg-theme-soft text-neutral-950' : 'border-gray-300'} text-sm font-semibold rounded-xl p-2.5 outline-none transition">
+                        ${opcoes}
+                    </select>
+                </div>`;
+            }).join("");
         }
 
-        window.aoAlterarCargo = function(index, valor) {
-            const u = getUnidadeAtual();
-            u.cargos[index] = valor;
+        window.aoAlterarCargo = function(idx, valor) {
+            getUnidadeAtual().cargos[idx] = valor;
             salvarEstado();
             renderizarCargos();
             atualizarContadorCargos();
         };
 
-        function atualizarContadorCargos() {
+        window.atualizarContadorCargos = function() {
             const u = getUnidadeAtual();
-            let comCargo = 0;
-            u.membros.forEach((_, idx) => {
-                if (u.cargos[idx] && u.cargos[idx] !== "Sem Cargo") comCargo++;
-            });
-            document.getElementById("contador-cargos").textContent = `${comCargo}/${u.membros.length}`;
-        }
+            let count = 0;
+            u.membros.forEach((_, i) => { if(u.cargos[i] && u.cargos[i] !== "Sem Cargo") count++; });
+            const el = document.getElementById("contador-cargos");
+            if (el) el.textContent = `${count}/${u.membros.length}`;
+        };
 
         window.limparCargos = function() {
-            const u = getUnidadeAtual();
-            u.cargos = {};
-            salvarEstado();
-            renderizarCargos();
-            atualizarContadorCargos();
-            mostrarNotificacao("Todos os cargos foram resetados para 'Sem Cargo'.");
+            abrirModalConfirmacao("Limpar Cargos", "Deseja voltar todos os membros para 'Sem Cargo'?", () => {
+                getUnidadeAtual().cargos = {};
+                salvarEstado();
+                renderizarCargos();
+                atualizarContadorCargos();
+                mostrarNotificacao("Cargos resetados.");
+            });
         };
 
-        // ==================== ABA 3: CANTINHO DA UNIDADE ====================
+        // ==================== ABA 3: CANTINHO ====================
         function renderizarCantinho() {
-            const u = getUnidadeAtual();
-            const c = u.cantinho;
-
+            const c = getUnidadeAtual().cantinho;
             document.getElementById("anotacoes-cantinho").value = c.anotacoes || "";
-
-            // Imagem anexada
-            const previewBox = document.getElementById("preview-imagem-cantinho-box");
-            const previewImg = document.getElementById("preview-imagem-cantinho");
+            
+            const prevBox = document.getElementById("preview-imagem-cantinho-box");
             if (c.imagem) {
-                previewImg.src = c.imagem;
-                previewBox.classList.remove("hidden");
+                document.getElementById("preview-imagem-cantinho").src = c.imagem;
+                prevBox.classList.remove("hidden");
             } else {
-                previewImg.src = "";
-                previewBox.classList.add("hidden");
+                prevBox.classList.add("hidden");
             }
 
-            // Atividades (cards sem quadrado, borda destacada quando selecionado)
-            const containerAtiv = document.getElementById("lista-atividades-cantinho");
-            containerAtiv.innerHTML = ATIVIDADES_CANTINHO.map(at => {
-                const marcado = c.atividadesSelecionadas.includes(at.id);
-                return `
-                    <button type="button" onclick="toggleAtividadeCantinho('${at.id}')"
-                        class="surface-subcard card-selecionavel ${marcado ? 'selecionado' : 'border-gray-200 bg-gray-50'} p-4 rounded-xl text-left flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg ${marcado ? 'bg-theme text-white' : 'bg-neutral-900 text-theme'} flex items-center justify-center shrink-0">
-                            <i class="fa-solid ${at.icon}"></i>
-                        </div>
-                        <span class="text-title-dynamic font-bold text-sm text-gray-800">${at.label}</span>
-                    </button>
-                `;
-            }).join("");
-
-            // Painel Especialidades
-            const painelEsp = document.getElementById("painel-especialidades");
-            if (c.atividadesSelecionadas.includes("especialidades")) {
-                painelEsp.classList.remove("hidden");
-                const listaEsp = document.getElementById("lista-especialidades");
-                listaEsp.innerHTML = c.especialidades.map((esp, idx) => {
-                    const sel = c.especialidadesSelecionadas.includes(esp);
+            const ativContainer = document.getElementById("lista-atividades-cantinho");
+            if (ativContainer) {
+                ativContainer.innerHTML = ATIVIDADES_CANTINHO.map(a => {
+                    const sel = (c.atividadesSelecionadas || []).includes(a.id);
                     return `
-                        <div onclick="toggleEspecialidadeCantinho('${esp.replace(/'/g, "\\'")}')"
-                            class="surface-card card-selecionavel ${sel ? 'selecionado' : 'border-gray-200 bg-white'} px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-2 cursor-pointer">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <i class="fa-solid fa-award ${sel ? 'text-theme' : 'text-gray-400'}"></i>
-                                <span class="text-title-dynamic font-bold text-xs sm:text-sm truncate">${esp}</span>
-                            </div>
-                            <button type="button" onclick="event.stopPropagation(); solicitarRemoverEspecialidade(${idx})" class="text-gray-400 hover:text-red-600 p-1">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
+                    <div onclick="toggleAtividadeCantinho('${a.id}')" class="surface-subcard card-selecionavel ${sel ? 'selecionado' : 'border-gray-200 bg-gray-50'} p-4 rounded-xl flex items-center gap-3 cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg ${sel ? 'bg-theme text-white' : 'bg-neutral-950 text-theme'} flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${a.icon}"></i>
                         </div>
-                    `;
+                        <span class="text-title-dynamic font-bold text-sm text-gray-800">${a.label}</span>
+                    </div>`;
                 }).join("");
-            } else {
-                painelEsp.classList.add("hidden");
             }
 
-            // Painel Clube de Leitura
-            const painelLeitura = document.getElementById("painel-leitura");
-            if (c.atividadesSelecionadas.includes("leitura")) {
-                painelLeitura.classList.remove("hidden");
-                const listaLivros = document.getElementById("lista-livros");
-                listaLivros.innerHTML = c.livros.map((livro, idx) => {
-                    const sel = c.livroSelecionado === livro;
+            const isEsp = (c.atividadesSelecionadas || []).includes("especialidades");
+            const isLivro = (c.atividadesSelecionadas || []).includes("leitura");
+            
+            const pEsp = document.getElementById("painel-especialidades");
+            const pLiv = document.getElementById("painel-leitura");
+            if(pEsp) isEsp ? pEsp.classList.remove("hidden") : pEsp.classList.add("hidden");
+            if(pLiv) isLivro ? pLiv.classList.remove("hidden") : pLiv.classList.add("hidden");
+
+            // Especialidades
+            const espCont = document.getElementById("lista-especialidades");
+            if(espCont && isEsp) {
+                espCont.innerHTML = (c.especialidades || []).map(esp => {
+                    const sel = (c.especialidadesSelecionadas || []).includes(esp);
                     return `
-                        <div onclick="toggleLivroCantinho('${livro.replace(/'/g, "\\'")}')"
-                            class="surface-card card-selecionavel ${sel ? 'selecionado' : 'border-gray-200 bg-white'} px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-2 cursor-pointer">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <i class="fa-solid fa-book ${sel ? 'text-theme' : 'text-gray-400'}"></i>
-                                <span class="text-title-dynamic font-bold text-xs sm:text-sm truncate">${livro}</span>
-                            </div>
-                            <button type="button" onclick="event.stopPropagation(); solicitarRemoverLivro(${idx})" class="text-gray-400 hover:text-red-600 p-1">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                        </div>
-                    `;
+                    <div class="flex items-center justify-between p-2.5 rounded-lg border-2 ${sel ? 'border-theme bg-theme-soft' : 'border-gray-200 bg-white'} cursor-pointer" onclick="toggleEspecialidade('${esp.replace(/'/g, "\\'")}')">
+                        <span class="text-sm font-bold truncate flex-1 text-gray-800 ${sel ? 'text-theme' : ''}"><i class="fa-solid ${sel ? 'fa-square-check' : 'fa-square'} mr-2"></i>${esp}</span>
+                        <button onclick="event.stopPropagation(); removerEspecialidade('${esp.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-red-500 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>`;
                 }).join("");
-            } else {
-                painelLeitura.classList.add("hidden");
+            }
+
+            // Leitura
+            const livCont = document.getElementById("lista-livros");
+            if(livCont && isLivro) {
+                livCont.innerHTML = (c.livros || []).map(liv => {
+                    const sel = c.livroSelecionado === liv;
+                    return `
+                    <div class="flex items-center justify-between p-2.5 rounded-lg border-2 ${sel ? 'border-theme bg-theme-soft' : 'border-gray-200 bg-white'} cursor-pointer" onclick="selecionarLivro('${liv.replace(/'/g, "\\'")}')">
+                        <span class="text-sm font-bold truncate flex-1 text-gray-800 ${sel ? 'text-theme' : ''}"><i class="fa-solid ${sel ? 'fa-circle-dot' : 'fa-circle'} mr-2"></i>${liv}</span>
+                        <button onclick="event.stopPropagation(); removerLivro('${liv.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-red-500 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </div>`;
+                }).join("");
             }
         }
 
+        window.toggleAtividadeCantinho = function(id) {
+            const c = getUnidadeAtual().cantinho;
+            if (!c.atividadesSelecionadas) c.atividadesSelecionadas = [];
+            const idx = c.atividadesSelecionadas.indexOf(id);
+            if (idx > -1) c.atividadesSelecionadas.splice(idx, 1);
+            else c.atividadesSelecionadas.push(id);
+            salvarEstado();
+            renderizarCantinho();
+        };
+
         window.aoAlterarAnotacoesCantinho = function() {
-            const u = getUnidadeAtual();
-            u.cantinho.anotacoes = document.getElementById("anotacoes-cantinho").value;
+            getUnidadeAtual().cantinho.anotacoes = document.getElementById("anotacoes-cantinho").value;
             salvarEstado();
         };
 
-        window.aoSelecionarImagemCantinho = function(event) {
-            const file = event.target.files[0];
+        window.aoSelecionarImagemCantinho = function(e) {
+            const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const u = getUnidadeAtual();
-                u.cantinho.imagem = e.target.result;
+            reader.onload = (ev) => {
+                getUnidadeAtual().cantinho.imagem = ev.target.result;
                 salvarEstado();
                 renderizarCantinho();
-                mostrarNotificacao("Imagem anexada ao Cantinho da Unidade!", "sucesso");
             };
             reader.readAsDataURL(file);
         };
 
         window.removerImagemCantinho = function() {
-            const u = getUnidadeAtual();
-            u.cantinho.imagem = null;
+            getUnidadeAtual().cantinho.imagem = null;
             document.getElementById("input-imagem-cantinho").value = "";
-            salvarEstado();
-            renderizarCantinho();
-        };
-
-        window.toggleAtividadeCantinho = function(id) {
-            const u = getUnidadeAtual();
-            const arr = u.cantinho.atividadesSelecionadas;
-            const pos = arr.indexOf(id);
-            if (pos >= 0) arr.splice(pos, 1);
-            else arr.push(id);
             salvarEstado();
             renderizarCantinho();
         };
 
         window.adicionarEspecialidade = function() {
-            const input = document.getElementById("input-nova-especialidade");
-            const nome = input.value.trim();
-            if (!nome) return;
-            const u = getUnidadeAtual();
-            if (!u.cantinho.especialidades.includes(nome)) {
-                u.cantinho.especialidades.push(nome);
-            }
-            if (!u.cantinho.especialidadesSelecionadas.includes(nome)) {
-                u.cantinho.especialidadesSelecionadas.push(nome);
-            }
-            input.value = "";
+            const inp = document.getElementById("input-nova-especialidade");
+            const val = inp.value.trim();
+            if (!val) return;
+            const c = getUnidadeAtual().cantinho;
+            if (!c.especialidades) c.especialidades = [];
+            if (!c.especialidades.includes(val)) c.especialidades.push(val);
+            inp.value = "";
             salvarEstado();
             renderizarCantinho();
         };
 
-        window.toggleEspecialidadeCantinho = function(nome) {
-            const u = getUnidadeAtual();
-            const arr = u.cantinho.especialidadesSelecionadas;
-            const pos = arr.indexOf(nome);
-            if (pos >= 0) arr.splice(pos, 1);
-            else arr.push(nome);
+        window.removerEspecialidade = function(esp) {
+            const c = getUnidadeAtual().cantinho;
+            c.especialidades = c.especialidades.filter(e => e !== esp);
+            c.especialidadesSelecionadas = c.especialidadesSelecionadas.filter(e => e !== esp);
             salvarEstado();
             renderizarCantinho();
         };
 
-        window.solicitarRemoverEspecialidade = function(idx) {
-            const u = getUnidadeAtual();
-            const esp = u.cantinho.especialidades[idx];
-            abrirModalConfirmacao("Remover Especialidade", `Deseja remover "${esp}" da lista?`, () => {
-                u.cantinho.especialidades.splice(idx, 1);
-                u.cantinho.especialidadesSelecionadas = u.cantinho.especialidadesSelecionadas.filter(e => e !== esp);
-                salvarEstado();
-                renderizarCantinho();
-            });
+        window.toggleEspecialidade = function(esp) {
+            const c = getUnidadeAtual().cantinho;
+            if (!c.especialidadesSelecionadas) c.especialidadesSelecionadas = [];
+            const idx = c.especialidadesSelecionadas.indexOf(esp);
+            if (idx > -1) c.especialidadesSelecionadas.splice(idx, 1);
+            else c.especialidadesSelecionadas.push(esp);
+            salvarEstado();
+            renderizarCantinho();
         };
 
         window.adicionarLivro = function() {
-            const input = document.getElementById("input-novo-livro");
-            const titulo = input.value.trim();
-            if (!titulo) return;
-            const u = getUnidadeAtual();
-            if (!u.cantinho.livros.includes(titulo)) {
-                u.cantinho.livros.push(titulo);
-            }
-            u.cantinho.livroSelecionado = titulo;
-            input.value = "";
+            const inp = document.getElementById("input-novo-livro");
+            const val = inp.value.trim();
+            if (!val) return;
+            const c = getUnidadeAtual().cantinho;
+            if (!c.livros) c.livros = [];
+            if (!c.livros.includes(val)) c.livros.push(val);
+            inp.value = "";
             salvarEstado();
             renderizarCantinho();
         };
 
-        window.toggleLivroCantinho = function(titulo) {
-            const u = getUnidadeAtual();
-            u.cantinho.livroSelecionado = (u.cantinho.livroSelecionado === titulo) ? "" : titulo;
+        window.removerLivro = function(liv) {
+            const c = getUnidadeAtual().cantinho;
+            c.livros = c.livros.filter(l => l !== liv);
+            if (c.livroSelecionado === liv) c.livroSelecionado = "";
             salvarEstado();
             renderizarCantinho();
         };
 
-        window.solicitarRemoverLivro = function(idx) {
-            const u = getUnidadeAtual();
-            const livro = u.cantinho.livros[idx];
-            abrirModalConfirmacao("Remover Livro", `Deseja remover "${livro}" da lista?`, () => {
-                u.cantinho.livros.splice(idx, 1);
-                if (u.cantinho.livroSelecionado === livro) u.cantinho.livroSelecionado = "";
-                salvarEstado();
-                renderizarCantinho();
-            });
+        window.selecionarLivro = function(liv) {
+            const c = getUnidadeAtual().cantinho;
+            c.livroSelecionado = c.livroSelecionado === liv ? "" : liv;
+            salvarEstado();
+            renderizarCantinho();
         };
 
         window.limparCantinho = function() {
-            const u = getUnidadeAtual();
-            u.cantinho.anotacoes = "";
-            u.cantinho.imagem = null;
-            u.cantinho.atividadesSelecionadas = [];
-            u.cantinho.especialidadesSelecionadas = [];
-            u.cantinho.livroSelecionado = "";
-            document.getElementById("input-imagem-cantinho").value = "";
-            salvarEstado();
-            renderizarCantinho();
-            mostrarNotificacao("Cantinho da Unidade limpo.");
+            abrirModalConfirmacao("Limpar Cantinho", "Deseja apagar os dados do Cantinho da Unidade?", () => {
+                const c = getUnidadeAtual().cantinho;
+                c.anotacoes = "";
+                c.imagem = null;
+                c.atividadesSelecionadas = [];
+                c.especialidadesSelecionadas = [];
+                c.livroSelecionado = "";
+                salvarEstado();
+                renderizarCantinho();
+                mostrarNotificacao("Cantinho limpo.");
+            });
         };
 
-        // ==================== TELA SECRETÁRIO(A) ====================
+        // ==================== SECRETÁRIO ====================
         function renderizarSecretario() {
             const s = estadoApp.secretario;
             document.getElementById("anotacoes-secretario").value = s.anotacoes || "";
 
             const previewBox = document.getElementById("preview-imagem-secretario-box");
-            const previewImg = document.getElementById("preview-imagem-secretario");
             if (s.imagem) {
-                previewImg.src = s.imagem;
+                document.getElementById("preview-imagem-secretario").src = s.imagem;
                 previewBox.classList.remove("hidden");
             } else {
-                previewImg.src = "";
                 previewBox.classList.add("hidden");
             }
 
-            const todasOpcoes = [
-                ...OPCOES_SECRETARIO_PADRAO.map(nome => ({ nome, personalizada: false })),
-                ...s.opcoesPersonalizadas.map((nome, idx) => ({ nome, personalizada: true, idx }))
-            ];
-
             const container = document.getElementById("lista-opcoes-secretario");
-            container.innerHTML = todasOpcoes.map(op => {
-                const marcado = s.selecionadas.includes(op.nome);
-                return `
-                    <div onclick="toggleOpcaoSecretario('${op.nome.replace(/'/g, "\\'")}')"
-                        class="surface-subcard card-selecionavel ${marcado ? 'selecionado' : 'border-gray-200 bg-gray-50'} p-4 rounded-xl flex items-center justify-between gap-3 cursor-pointer">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-lg ${marcado ? 'bg-blue-600 text-white' : 'bg-neutral-950 text-blue-400'} flex items-center justify-center shrink-0">
-                                <i class="fa-solid ${op.personalizada ? 'fa-bookmark' : 'fa-users-rectangle'}"></i>
+            if(container) {
+                const todas = [...OPCOES_SECRETARIO_PADRAO.map(n => ({nome:n, pers:false})), ...(s.opcoesPersonalizadas||[]).map((n,i) => ({nome:n, pers:true, idx:i}))];
+                container.innerHTML = todas.map(op => {
+                    const sel = (s.selecionadas||[]).includes(op.nome);
+                    return `
+                    <div onclick="toggleOpcaoSecretario('${op.nome.replace(/'/g, "\\'")}')" class="surface-subcard card-selecionavel ${sel ? 'selecionado' : 'border-gray-200 bg-gray-50'} p-4 rounded-xl flex items-center justify-between gap-3 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg ${sel ? 'bg-blue-600 text-white' : 'bg-neutral-950 text-blue-400'} flex items-center justify-center shrink-0">
+                                <i class="fa-solid ${op.pers ? 'fa-bookmark' : 'fa-users-rectangle'}"></i>
                             </div>
-                            <span class="text-title-dynamic font-bold text-sm text-gray-800 truncate">${op.nome}</span>
+                            <span class="text-title-dynamic font-bold text-sm text-gray-800">${op.nome}</span>
                         </div>
-                        ${op.personalizada ? `
-                            <button type="button" onclick="event.stopPropagation(); solicitarRemoverOpcaoSecretario(${op.idx})" title="Remover opção"
-                                class="text-gray-400 hover:text-red-600 p-1.5 transition">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                `;
-            }).join("");
+                        ${op.pers ? `<button onclick="event.stopPropagation(); solicitarRemoverOpcaoSecretario(${op.idx})" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>`;
+                }).join("");
+            }
+            renderizarHistoricoSecretario();
         }
+
+        window.alternarAbaSecretario = function(aba) {
+            estadoApp.abaSecretarioAtiva = aba;
+            salvarEstado();
+            const r = document.getElementById("secretario-conteudo-registro");
+            const h = document.getElementById("secretario-conteudo-historico");
+            const tr = document.getElementById("tab-sec-registro");
+            const th = document.getElementById("tab-sec-historico");
+            
+            if (aba === "historico") {
+                r.classList.add("hidden"); h.classList.remove("hidden");
+                th.className = "py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow";
+                tr.className = "btn-secondary-dynamic py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-700 hover:bg-gray-100";
+            } else {
+                h.classList.add("hidden"); r.classList.remove("hidden");
+                tr.className = "py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow";
+                th.className = "btn-secondary-dynamic py-3 px-4 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-gray-700 hover:bg-gray-100";
+            }
+        };
 
         window.aoAlterarAnotacoesSecretario = function() {
             estadoApp.secretario.anotacoes = document.getElementById("anotacoes-secretario").value;
             salvarEstado();
         };
 
-        window.aoSelecionarImagemSecretario = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                estadoApp.secretario.imagem = e.target.result;
+        window.aoSelecionarImagemSecretario = function(e) {
+            const f = e.target.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                estadoApp.secretario.imagem = ev.target.result;
                 salvarEstado();
                 renderizarSecretario();
-                mostrarNotificacao("Imagem anexada na Secretaria!", "sucesso");
             };
-            reader.readAsDataURL(file);
+            r.readAsDataURL(f);
         };
 
         window.removerImagemSecretario = function() {
             estadoApp.secretario.imagem = null;
-            document.getElementById("input-imagem-secretario").value = "";
             salvarEstado();
             renderizarSecretario();
         };
 
         window.toggleOpcaoSecretario = function(nome) {
-            const arr = estadoApp.secretario.selecionadas;
-            const pos = arr.indexOf(nome);
-            if (pos >= 0) arr.splice(pos, 1);
-            else arr.push(nome);
+            const s = estadoApp.secretario;
+            if (!s.selecionadas) s.selecionadas = [];
+            const i = s.selecionadas.indexOf(nome);
+            if (i > -1) s.selecionadas.splice(i, 1);
+            else s.selecionadas.push(nome);
             salvarEstado();
             renderizarSecretario();
         };
 
         window.adicionarOpcaoSecretario = function() {
-            const input = document.getElementById("input-nova-opcao-secretario");
-            const nome = input.value.trim();
-            if (!nome) return;
-            const s = estadoApp.secretario;
-            if (!OPCOES_SECRETARIO_PADRAO.includes(nome) && !s.opcoesPersonalizadas.includes(nome)) {
-                s.opcoesPersonalizadas.push(nome);
-            }
-            if (!s.selecionadas.includes(nome)) {
-                s.selecionadas.push(nome);
-            }
-            input.value = "";
+            const val = document.getElementById("input-nova-opcao-secretario").value.trim();
+            if (!val) return;
+            if (!estadoApp.secretario.opcoesPersonalizadas) estadoApp.secretario.opcoesPersonalizadas = [];
+            if (!estadoApp.secretario.opcoesPersonalizadas.includes(val)) estadoApp.secretario.opcoesPersonalizadas.push(val);
+            document.getElementById("input-nova-opcao-secretario").value = "";
             salvarEstado();
             renderizarSecretario();
         };
 
         window.solicitarRemoverOpcaoSecretario = function(idx) {
-            const nome = estadoApp.secretario.opcoesPersonalizadas[idx];
-            abrirModalConfirmacao("Remover Opção", `Deseja remover "${nome}" da secretaria?`, () => {
-                estadoApp.secretario.opcoesPersonalizadas.splice(idx, 1);
-                estadoApp.secretario.selecionadas = estadoApp.secretario.selecionadas.filter(x => x !== nome);
-                salvarEstado();
-                renderizarSecretario();
-            });
+            const op = estadoApp.secretario.opcoesPersonalizadas[idx];
+            estadoApp.secretario.opcoesPersonalizadas.splice(idx, 1);
+            estadoApp.secretario.selecionadas = estadoApp.secretario.selecionadas.filter(n => n !== op);
+            salvarEstado();
+            renderizarSecretario();
         };
 
         window.limparSecretario = function() {
-            estadoApp.secretario.anotacoes = "";
-            estadoApp.secretario.imagem = null;
-            estadoApp.secretario.selecionadas = [];
-            document.getElementById("input-imagem-secretario").value = "";
-            salvarEstado();
-            renderizarSecretario();
-            mostrarNotificacao("Registros da Secretaria limpos.");
+            abrirModalConfirmacao("Limpar Secretaria", "Deseja apagar os dados preenchidos na secretaria?", () => {
+                estadoApp.secretario.anotacoes = "";
+                estadoApp.secretario.imagem = null;
+                estadoApp.secretario.selecionadas = [];
+                salvarEstado();
+                renderizarSecretario();
+                mostrarNotificacao("Secretaria limpa.");
+            });
         };
 
-        // ==================== GERAÇÃO DE RELATÓRIOS EM PDF ====================
-        function adicionarAssinaturasPDF(doc, startY) {
-            let y = startY + 22;
-            if (y > 272) {
-                doc.addPage();
-                y = 28;
-            }
-            doc.setDrawColor(100, 116, 139);
-            doc.setFontSize(9.5);
-            doc.setTextColor(71, 85, 105);
-
-            doc.line(14, y, 96, y);
-            doc.text("Assinatura do Conselheiro(a)", 14, y + 5);
-
-            doc.line(112, y, 196, y);
-            doc.text("Assinatura do Diretor(a)", 112, y + 5);
+        // ==================== HISTÓRICOS ====================
+        function obterDataHoraEmissaoAtual() {
+            const ag = new Date();
+            const d = String(ag.getDate()).padStart(2, '0');
+            const m = String(ag.getMonth() + 1).padStart(2, '0');
+            const a = ag.getFullYear();
+            const hh = String(ag.getHours()).padStart(2, '0');
+            const mm = String(ag.getMinutes()).padStart(2, '0');
+            return { dataBR: `${d}/${m}/${a}`, completo: `${d}/${m}/${a} às ${hh}:${mm}` };
         }
 
+        function registrarHistoricoUnidade(tipo, titulo, resumo, snapshot) {
+            const u = getUnidadeAtual();
+            if (!Array.isArray(u.historico)) u.historico = [];
+            const em = obterDataHoraEmissaoAtual();
+            u.historico.unshift({
+                id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                tipo, titulo, emitidoEm: em.completo, dataEmissaoBR: em.dataBR, resumo, snapshot: JSON.parse(JSON.stringify(snapshot))
+            });
+            salvarEstado();
+            renderizarHistoricoUnidade();
+        }
+
+        function registrarHistoricoSecretario(resumo, snapshot) {
+            if (!Array.isArray(estadoApp.secretario.historico)) estadoApp.secretario.historico = [];
+            const em = obterDataHoraEmissaoAtual();
+            estadoApp.secretario.historico.unshift({
+                id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                titulo: "Relatório da Secretaria", emitidoEm: em.completo, dataEmissaoBR: em.dataBR, resumo, snapshot: JSON.parse(JSON.stringify(snapshot))
+            });
+            salvarEstado();
+            renderizarHistoricoSecretario();
+        }
+
+        function obterIconeTipoRelatorio(tipo) {
+            if (tipo === "chamada") return "fa-clipboard-check";
+            if (tipo === "cargos") return "fa-users-gear";
+            if (tipo === "cantinho") return "fa-campground";
+            if (tipo === "geral") return "fa-file-lines";
+            return "fa-file-signature";
+        }
+
+        function renderizarHistoricoUnidade() {
+            const u = getUnidadeAtual();
+            const lista = Array.isArray(u.historico) ? u.historico : [];
+            const cont = document.getElementById("lista-historico-unidade");
+            if(document.getElementById("badge-historico-unidade")) document.getElementById("badge-historico-unidade").textContent = lista.length;
+            if(document.getElementById("contador-historico-unidade")) document.getElementById("contador-historico-unidade").textContent = lista.length;
+            
+            if(!cont) return;
+            if(lista.length === 0) {
+                document.getElementById("acoes-historico-unidade").classList.add("hidden");
+                cont.innerHTML = `<div class="surface-card bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-300"><i class="fa-solid fa-folder-open text-4xl text-theme mb-3"></i><h3 class="font-extrabold text-gray-800">Nenhum relatório emitido</h3></div>`;
+                return;
+            }
+            document.getElementById("acoes-historico-unidade").classList.remove("hidden");
+            cont.innerHTML = lista.map((item, idx) => `
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-neutral-950 text-theme flex items-center justify-center text-lg"><i class="fa-solid ${obterIconeTipoRelatorio(item.tipo)}"></i></div>
+                        <div><h3 class="font-black">${item.titulo}</h3><p class="text-xs text-gray-500">${item.emitidoEm}</p><p class="text-sm mt-1 text-gray-600">${item.resumo||""}</p></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="baixarNovamenteHistoricoUnidade(${idx})" class="bg-theme text-white px-3 py-2 rounded-xl text-sm font-bold shadow hover:opacity-90"><i class="fa-solid fa-download mr-1"></i> PDF</button>
+                        <button onclick="solicitarExcluirItemHistoricoUnidade(${idx})" class="text-red-500 p-2 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        window.baixarNovamenteHistoricoUnidade = function(idx) {
+            const u = getUnidadeAtual();
+            const item = u.historico[idx];
+            const cfg = getConfigUnidadeAtual();
+            if (!item || !item.snapshot) return;
+            try {
+                if (item.tipo === "chamada") construirESalvarPDFChamada(cfg, item.snapshot);
+                else if (item.tipo === "cargos") construirESalvarPDFCargos(cfg, item.snapshot, item.dataEmissaoBR);
+                else if (item.tipo === "cantinho") construirESalvarPDFCantinho(cfg, item.snapshot);
+                else if (item.tipo === "geral") construirESalvarPDFGeral(cfg, item.snapshot);
+                mostrarNotificacao("PDF baixado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro ao gerar.", "erro"); }
+        };
+
+        window.solicitarExcluirItemHistoricoUnidade = function(idx) {
+            abrirModalConfirmacao("Remover do Histórico", "Tem certeza?", () => {
+                getUnidadeAtual().historico.splice(idx, 1);
+                salvarEstado(); renderizarHistoricoUnidade();
+            });
+        };
+
+        window.solicitarLimparHistoricoUnidade = function() {
+            abrirModalConfirmacao("Limpar Histórico", "Deseja apagar todos?", () => {
+                getUnidadeAtual().historico = [];
+                salvarEstado(); renderizarHistoricoUnidade();
+            });
+        };
+
+        function renderizarHistoricoSecretario() {
+            const lista = Array.isArray(estadoApp.secretario.historico) ? estadoApp.secretario.historico : [];
+            const cont = document.getElementById("lista-historico-secretario");
+            if(document.getElementById("badge-historico-secretario")) document.getElementById("badge-historico-secretario").textContent = lista.length;
+            if(document.getElementById("contador-historico-secretario")) document.getElementById("contador-historico-secretario").textContent = lista.length;
+            
+            if(!cont) return;
+            if(lista.length === 0) {
+                document.getElementById("acoes-historico-secretario").classList.add("hidden");
+                cont.innerHTML = `<div class="surface-card bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-300"><i class="fa-solid fa-folder-open text-4xl text-blue-600 mb-3"></i><h3 class="font-extrabold text-gray-800">Nenhum relatório emitido</h3></div>`;
+                return;
+            }
+            document.getElementById("acoes-historico-secretario").classList.remove("hidden");
+            cont.innerHTML = lista.map((item, idx) => `
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-neutral-950 text-blue-400 flex items-center justify-center text-lg"><i class="fa-solid fa-file-signature"></i></div>
+                        <div><h3 class="font-black">${item.titulo}</h3><p class="text-xs text-gray-500">${item.emitidoEm}</p><p class="text-sm mt-1 text-gray-600">${item.resumo||""}</p></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="baixarNovamenteHistoricoSecretario(${idx})" class="bg-blue-600 text-white px-3 py-2 rounded-xl text-sm font-bold shadow hover:opacity-90"><i class="fa-solid fa-download mr-1"></i> PDF</button>
+                        <button onclick="solicitarExcluirItemHistoricoSecretario(${idx})" class="text-red-500 p-2 hover:bg-red-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        window.baixarNovamenteHistoricoSecretario = function(idx) {
+            const item = estadoApp.secretario.historico[idx];
+            if (!item || !item.snapshot) return;
+            try { construirESalvarPDFSecretario(item.snapshot, item.dataEmissaoBR); mostrarNotificacao("PDF baixado!", "sucesso"); }
+            catch(e) { mostrarNotificacao("Erro", "erro"); }
+        };
+
+        window.solicitarExcluirItemHistoricoSecretario = function(idx) {
+            abrirModalConfirmacao("Remover", "Certeza?", () => { estadoApp.secretario.historico.splice(idx,1); salvarEstado(); renderizarHistoricoSecretario(); });
+        };
+        window.solicitarLimparHistoricoSecretario = function() {
+            abrirModalConfirmacao("Limpar", "Apagar tudo?", () => { estadoApp.secretario.historico = []; salvarEstado(); renderizarHistoricoSecretario(); });
+        };
+
+        // ==================== PDF HELPERS ====================
         function adicionarCabecalhoPDF(doc, titulo, subtitulo, corRGB) {
             doc.setFillColor(10, 10, 10);
             doc.rect(0, 0, 210, 32, 'F');
             doc.setFillColor(...corRGB);
             doc.rect(0, 32, 210, 2.5, 'F');
-
             doc.setTextColor(255, 255, 255);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(16);
-            doc.text(titulo, 14, 15);
-
+            doc.text(titulo, 14, 16);
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(10.5);
-            doc.setTextColor(220, 220, 220);
+            doc.setFontSize(10);
+            doc.setTextColor(180, 180, 180);
             doc.text(subtitulo, 14, 24);
         }
 
-        function adicionarImagemNoPDF(doc, base64Img, startY) {
-            if (!base64Img) return startY;
-            let y = startY + 8;
-            if (y > 205) {
-                doc.addPage();
-                y = 20;
-            }
-            try {
-                const formato = base64Img.startsWith("data:image/png") ? "PNG" : "JPEG";
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(30, 41, 59);
-                doc.text("Registro Fotográfico:", 14, y);
-                doc.addImage(base64Img, formato, 14, y + 4, 85, 62);
-                return y + 70;
-            } catch (e) {
-                return y;
-            }
+        function adicionarAssinaturasPDF(doc, yPos) {
+            let y = yPos + 35;
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text("Assinatura do Conselheiro(a): ___________________________________________", 14, y);
+            doc.text("Assinatura do Diretor(a): ___________________________________________", 14, y + 10);
         }
 
-        // PDF 1: Chamada e Avaliação (inclui indicadores 1 a 5)
+        function adicionarImagemNoPDF(doc, base64, yPos) {
+            if (!base64) return yPos;
+            try {
+                if (yPos > 160) { doc.addPage(); yPos = 20; }
+                doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+                doc.text("Registro Fotográfico:", 14, yPos);
+                yPos += 5;
+                doc.addImage(base64, 'JPEG', 14, yPos, 80, 80, '', 'FAST');
+                return yPos + 85;
+            } catch(e) { return yPos; }
+        }
+
+        // ==================== PDF GERAÇÃO ====================
+        function construirESalvarPDFChamada(cfg, dados) {
+            const doc = new window.jspdf.jsPDF();
+            adicionarCabecalhoPDF(doc, `CHAMADA E AVALIAÇÃO - ${cfg.nome.toUpperCase()}`, `Data: ${formatarDataBR(dados.dataReuniao)}`, cfg.corRGB);
+            
+            const col = ["Nº", "Nome", "Pres.", "Pont.", "Unif.", "Bíblia", "Disc.", "Bem-Estar"];
+            const linhas = (dados.membros || []).map((n, i) => {
+                const r = dados.chamada[i] || {};
+                const be = r.bemEstar || {};
+                const isFalta = r.presenca === "Não";
+                const beStr = isFalta ? "Faltou" : `H:${be.humor||'-'} F:${be.felicidade||'-'} D:${be.disposicao||'-'} I:${be.interacao||'-'} Fc:${be.foco||'-'}`;
+                return [i+1, n, r.presenca||"-", isFalta?"Bloq.":r.pontualidade||"-", isFalta?"Bloq.":r.uniforme||"-", isFalta?"Bloq.":r.biblia||"-", isFalta?"Bloq.":r.disciplina||"-", beStr];
+            });
+            doc.autoTable({ startY: 42, head: [col], body: linhas, theme: 'grid', headStyles: { fillColor: [23,23,23], fontSize: 8 }, styles: { fontSize: 8 } });
+            adicionarAssinaturasPDF(doc, doc.lastAutoTable.finalY || 120);
+            doc.save(`Chamada_${cfg.nome}_${formatarDataBR(dados.dataReuniao).replace(/\//g,'-')}.pdf`);
+        }
         window.gerarPDF = function() {
             try {
-                const u = getUnidadeAtual();
-                const cfg = getConfigUnidadeAtual();
-                const dataFmt = formatarDataBR(u.dataReuniao);
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                adicionarCabecalhoPDF(doc, `CHAMADA E AVALIAÇÃO - ${cfg.nome.toUpperCase()}`, `Clube de Desbravadores Aaziz  |  Data: ${dataFmt}`, cfg.corRGB);
-
-                const colunas = ["Nº", "Nome", "Pres.", "Pont.", "Unif.", "Bíblia", "Disc.", "Bem-Estar (1-5)"];
-                const linhas = u.membros.map((nome, idx) => {
-                    const reg = u.chamada[idx] || {};
-                    const isFalta = reg.presenca === "Não";
-                    const be = reg.bemEstar || {};
-                    const resumoBE = isFalta
-                        ? "Faltou"
-                        : `H:${be.humor || '-'} F:${be.felicidade || '-'} D:${be.disposicao || '-'} I:${be.interacao || '-'} Fc:${be.foco || '-'}`;
-
-                    return [
-                        idx + 1,
-                        nome,
-                        reg.presenca || "-",
-                        isFalta ? "Bloq." : (reg.pontualidade || "-"),
-                        isFalta ? "Bloq." : (reg.uniforme || "-"),
-                        isFalta ? "Bloq." : (reg.biblia || "-"),
-                        isFalta ? "Bloq." : (reg.disciplina || "-"),
-                        resumoBE
-                    ];
-                });
-
-                doc.autoTable({
-                    startY: 42,
-                    head: [colunas],
-                    body: linhas,
-                    theme: 'grid',
-                    headStyles: { fillColor: [23, 23, 23], textColor: [255, 255, 255], fontSize: 7.5 },
-                    styles: { fontSize: 7.5, cellPadding: 2.5 }
-                });
-
-                adicionarAssinaturasPDF(doc, doc.lastAutoTable.finalY || 120);
-                doc.save(`Chamada_${cfg.nome.replace(/\s+/g, "_")}_${dataFmt.replace(/\//g, "-")}.pdf`);
-                mostrarNotificacao("Relatório de Chamada gerado com sucesso!", "sucesso");
-            } catch (err) {
-                mostrarNotificacao("Erro ao gerar PDF.", "erro");
-            }
+                const u = getUnidadeAtual(); const cfg = getConfigUnidadeAtual();
+                const snap = { membros: [...u.membros], dataReuniao: u.dataReuniao, chamada: u.chamada };
+                construirESalvarPDFChamada(cfg, snap);
+                registrarHistoricoUnidade("chamada", "Chamada", `Data: ${formatarDataBR(u.dataReuniao)}`, snap);
+                mostrarNotificacao("Relatório PDF Gerado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro", "erro"); }
         };
 
-        // PDF 2: Cargos da Unidade
+        function construirESalvarPDFCargos(cfg, dados, dataEm) {
+            const doc = new window.jspdf.jsPDF();
+            adicionarCabecalhoPDF(doc, `CARGOS - ${cfg.nome.toUpperCase()}`, `Emissão: ${dataEm}`, cfg.corRGB);
+            const linhas = (dados.membros||[]).map((n,i) => [i+1, n, dados.cargos[i]||"Sem Cargo"]);
+            doc.autoTable({ startY: 42, head: [["Nº","Nome","Cargo"]], body: linhas, theme: 'grid', headStyles: { fillColor:[23,23,23] } });
+            adicionarAssinaturasPDF(doc, doc.lastAutoTable.finalY || 120);
+            doc.save(`Cargos_${cfg.nome}.pdf`);
+        }
         window.gerarPDFCargos = function() {
             try {
-                const u = getUnidadeAtual();
-                const cfg = getConfigUnidadeAtual();
-                const hoje = new Date().toLocaleDateString('pt-BR');
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                adicionarCabecalhoPDF(doc, `CARGOS DA UNIDADE - ${cfg.nome.toUpperCase()}`, `Clube de Desbravadores Aaziz  |  Emissão: ${hoje}`, cfg.corRGB);
-
-                const linhas = u.membros.map((nome, idx) => [
-                    idx + 1,
-                    nome,
-                    u.cargos[idx] || "Sem Cargo"
-                ]);
-
-                doc.autoTable({
-                    startY: 42,
-                    head: [["Nº", "Nome do Desbravador(a)", "Cargo na Unidade"]],
-                    body: linhas,
-                    theme: 'grid',
-                    headStyles: { fillColor: [23, 23, 23], textColor: [255, 255, 255] },
-                    styles: { fontSize: 9, cellPadding: 3.5 }
-                });
-
-                adicionarAssinaturasPDF(doc, doc.lastAutoTable.finalY || 120);
-                doc.save(`Cargos_${cfg.nome.replace(/\s+/g, "_")}.pdf`);
-                mostrarNotificacao("Relatório de Cargos gerado com sucesso!", "sucesso");
-            } catch (err) {
-                mostrarNotificacao("Erro ao gerar PDF de Cargos.", "erro");
-            }
+                const u = getUnidadeAtual(); const cfg = getConfigUnidadeAtual(); const hj = formatarDataBR(obterDataHojeISO());
+                const snap = { membros: [...u.membros], cargos: u.cargos };
+                construirESalvarPDFCargos(cfg, snap, hj);
+                registrarHistoricoUnidade("cargos", "Cargos", "Relatório de Cargos da Unidade", snap);
+                mostrarNotificacao("Cargos Gerado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro", "erro"); }
         };
 
-        // PDF 3: Cantinho da Unidade (Especialidades e Livro são opcionais!)
+        function construirESalvarPDFCantinho(cfg, dados) {
+            const doc = new window.jspdf.jsPDF();
+            adicionarCabecalhoPDF(doc, `CANTINHO - ${cfg.nome.toUpperCase()}`, `Data: ${formatarDataBR(dados.dataReuniao)}`, cfg.corRGB);
+            const c = dados.cantinho || {};
+            let y = 45;
+            doc.setFont("helvetica", "bold"); doc.text("Atividades:", 14, y); y += 7;
+            doc.setFont("helvetica", "normal");
+            (c.atividadesSelecionadas||[]).forEach(at => {
+                let lbl = (ATIVIDADES_CANTINHO.find(x=>x.id===at)||{}).label || at;
+                if(at==="especialidades" && c.especialidadesSelecionadas?.length) lbl += ` (${c.especialidadesSelecionadas.join(", ")})`;
+                if(at==="leitura" && c.livroSelecionado) lbl += ` (Livro: ${c.livroSelecionado})`;
+                doc.text(`• ${lbl}`, 16, y); y += 6;
+            });
+            y += 4;
+            doc.setFont("helvetica", "bold"); doc.text("Anotações:", 14, y); y += 7;
+            doc.setFont("helvetica", "normal");
+            const txt = doc.splitTextToSize((c.anotacoes||"").trim() || "Nenhuma.", 180);
+            doc.text(txt, 14, y); y += txt.length * 6;
+            y = adicionarImagemNoPDF(doc, c.imagem, y);
+            adicionarAssinaturasPDF(doc, y);
+            doc.save(`Cantinho_${cfg.nome}.pdf`);
+        }
         window.gerarPDFCantinho = function() {
             try {
-                const u = getUnidadeAtual();
-                const cfg = getConfigUnidadeAtual();
-                const c = u.cantinho;
-                const hoje = formatarDataBR(u.dataReuniao);
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                adicionarCabecalhoPDF(doc, `CANTINHO DA UNIDADE - ${cfg.nome.toUpperCase()}`, `Clube de Desbravadores Aaziz  |  Data: ${hoje}`, cfg.corRGB);
-
-                let y = 44;
-                doc.setTextColor(15, 23, 42);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text("Atividades Realizadas:", 14, y);
-                y += 7;
-
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-
-                if (c.atividadesSelecionadas.length === 0) {
-                    doc.text("- Nenhuma atividade marcada.", 18, y);
-                    y += 7;
-                } else {
-                    c.atividadesSelecionadas.forEach(atId => {
-                        const info = ATIVIDADES_CANTINHO.find(a => a.id === atId);
-                        let linha = `• ${info ? info.label : atId}`;
-                        if (atId === "especialidades" && c.especialidadesSelecionadas.length > 0) {
-                            linha += ` (${c.especialidadesSelecionadas.join(", ")})`;
-                        }
-                        if (atId === "leitura" && c.livroSelecionado) {
-                            linha += ` (Livro: ${c.livroSelecionado})`;
-                        }
-                        const quebrado = doc.splitTextToSize(linha, 178);
-                        doc.text(quebrado, 18, y);
-                        y += quebrado.length * 6;
-                    });
-                }
-
-                y += 6;
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text("Anotações:", 14, y);
-                y += 7;
-
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                const textoAnot = c.anotacoes.trim() || "Sem anotações adicionais.";
-                const linhasAnot = doc.splitTextToSize(textoAnot, 180);
-                doc.text(linhasAnot, 14, y);
-                y += linhasAnot.length * 6;
-
-                y = adicionarImagemNoPDF(doc, c.imagem, y);
-                adicionarAssinaturasPDF(doc, y);
-
-                doc.save(`Cantinho_${cfg.nome.replace(/\s+/g, "_")}.pdf`);
-                mostrarNotificacao("Relatório do Cantinho gerado com sucesso!", "sucesso");
-            } catch (err) {
-                mostrarNotificacao("Erro ao gerar PDF do Cantinho.", "erro");
-            }
+                const u = getUnidadeAtual(); const cfg = getConfigUnidadeAtual();
+                const snap = { dataReuniao: u.dataReuniao, cantinho: u.cantinho };
+                construirESalvarPDFCantinho(cfg, snap);
+                registrarHistoricoUnidade("cantinho", "Cantinho", "Relatório do Cantinho", snap);
+                mostrarNotificacao("Cantinho Gerado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro", "erro"); }
         };
 
-        // PDF 4: Relatório Geral da Unidade (Chamada + Bem-Estar + Cargos + Cantinho)
+        function construirESalvarPDFGeral(cfg, dados) {
+            const doc = new window.jspdf.jsPDF();
+            adicionarCabecalhoPDF(doc, `RELATÓRIO GERAL - ${cfg.nome.toUpperCase()}`, `Data: ${formatarDataBR(dados.dataReuniao)}`, cfg.corRGB);
+            
+            doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("1. Chamada e Avaliação", 14, 45);
+            const col = ["Nº", "Nome", "Pres.", "Pont.", "Unif.", "Bíblia", "Disc.", "Bem-Estar"];
+            const linhas = (dados.membros || []).map((n, i) => {
+                const r = dados.chamada[i] || {};
+                const be = r.bemEstar || {};
+                const isFalta = r.presenca === "Não";
+                const beStr = isFalta ? "-" : `H:${be.humor||'-'} F:${be.felicidade||'-'} D:${be.disposicao||'-'} I:${be.interacao||'-'} Fc:${be.foco||'-'}`;
+                return [i+1, n, r.presenca||"-", isFalta?"-":r.pontualidade||"-", isFalta?"-":r.uniforme||"-", isFalta?"-":r.biblia||"-", isFalta?"-":r.disciplina||"-", beStr];
+            });
+            doc.autoTable({ startY: 48, head: [col], body: linhas, theme: 'grid', headStyles: { fillColor: [23,23,23], fontSize: 8 }, styles: { fontSize: 8 } });
+            
+            let y = doc.lastAutoTable.finalY + 12;
+            doc.text("2. Cargos", 14, y);
+            const lc = (dados.membros||[]).map((n,i) => [i+1, n, dados.cargos[i]||"Sem Cargo"]);
+            doc.autoTable({ startY: y+4, head: [["Nº","Nome","Cargo"]], body: lc, theme: 'grid', headStyles: { fillColor: [23,23,23] } });
+            
+            y = doc.lastAutoTable.finalY + 12;
+            if (y > 240) { doc.addPage(); y = 20; }
+            doc.text("3. Cantinho", 14, y); y += 6;
+            doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+            doc.text("Anotações: " + ((dados.cantinho?.anotacoes||"").substring(0, 80)), 14, y);
+            
+            adicionarAssinaturasPDF(doc, y + 10);
+            doc.save(`Geral_${cfg.nome}.pdf`);
+        }
         window.gerarRelatorioGeral = function() {
             try {
-                const u = getUnidadeAtual();
-                const cfg = getConfigUnidadeAtual();
-                const c = u.cantinho;
-                const dataFmt = formatarDataBR(u.dataReuniao);
-
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                adicionarCabecalhoPDF(doc, `RELATÓRIO GERAL - ${cfg.nome.toUpperCase()}`, `Clube de Desbravadores Aaziz  |  Data: ${dataFmt}`, cfg.corRGB);
-
-                // 1. Chamada
-                doc.setTextColor(15, 23, 42);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
-                doc.text("1. Chamada, Avaliação e Bem-Estar (1 a 5)", 14, 44);
-
-                const colunasChamada = ["Nº", "Nome", "Pres.", "Pont.", "Unif.", "Bíblia", "Disc.", "Bem-Estar"];
-                const linhasChamada = u.membros.map((nome, idx) => {
-                    const reg = u.chamada[idx] || {};
-                    const isFalta = reg.presenca === "Não";
-                    const be = reg.bemEstar || {};
-                    const resumoBE = isFalta
-                        ? "Faltou"
-                        : `H:${be.humor || '-'} F:${be.felicidade || '-'} D:${be.disposicao || '-'} I:${be.interacao || '-'} Fc:${be.foco || '-'}`;
-                    return [
-                        idx + 1,
-                        nome,
-                        reg.presenca || "-",
-                        isFalta ? "Bloq." : (reg.pontualidade || "-"),
-                        isFalta ? "Bloq." : (reg.uniforme || "-"),
-                        isFalta ? "Bloq." : (reg.biblia || "-"),
-                        isFalta ? "Bloq." : (reg.disciplina || "-"),
-                        resumoBE
-                    ];
-                });
-
-                doc.autoTable({
-                    startY: 48,
-                    head: [colunasChamada],
-                    body: linhasChamada,
-                    theme: 'grid',
-                    headStyles: { fillColor: [23, 23, 23], textColor: [255, 255, 255], fontSize: 7.5 },
-                    styles: { fontSize: 7.5, cellPadding: 2 }
-                });
-
-                // 2. Cargos
-                let y = doc.lastAutoTable.finalY + 12;
-                if (y > 240) { doc.addPage(); y = 20; }
-
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
-                doc.text("2. Cargos da Unidade", 14, y);
-
-                const linhasCargos = u.membros.map((nome, idx) => [idx + 1, nome, u.cargos[idx] || "Sem Cargo"]);
-                doc.autoTable({
-                    startY: y + 4,
-                    head: [["Nº", "Nome", "Cargo"]],
-                    body: linhasCargos,
-                    theme: 'grid',
-                    headStyles: { fillColor: [23, 23, 23], textColor: [255, 255, 255], fontSize: 8.5 },
-                    styles: { fontSize: 8.5, cellPadding: 2.5 }
-                });
-
-                // 3. Cantinho da Unidade
-                y = doc.lastAutoTable.finalY + 12;
-                if (y > 235) { doc.addPage(); y = 20; }
-
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
-                doc.text("3. Cantinho da Unidade", 14, y);
-                y += 7;
-
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                if (c.atividadesSelecionadas.length > 0) {
-                    c.atividadesSelecionadas.forEach(atId => {
-                        const info = ATIVIDADES_CANTINHO.find(a => a.id === atId);
-                        let linha = `• ${info ? info.label : atId}`;
-                        if (atId === "especialidades" && c.especialidadesSelecionadas.length > 0) {
-                            linha += ` (${c.especialidadesSelecionadas.join(", ")})`;
-                        }
-                        if (atId === "leitura" && c.livroSelecionado) {
-                            linha += ` (Livro: ${c.livroSelecionado})`;
-                        }
-                        const q = doc.splitTextToSize(linha, 180);
-                        doc.text(q, 14, y);
-                        y += q.length * 5.5;
-                    });
-                } else {
-                    doc.text("• Nenhuma atividade selecionada.", 14, y);
-                    y += 6;
-                }
-
-                y += 3;
-                const anot = doc.splitTextToSize(`Anotações: ${c.anotacoes.trim() || "Nenhuma anotação."}`, 180);
-                doc.text(anot, 14, y);
-                y += anot.length * 5.5;
-
-                y = adicionarImagemNoPDF(doc, c.imagem, y);
-                adicionarAssinaturasPDF(doc, y);
-
-                doc.save(`Relatorio_Geral_${cfg.nome.replace(/\s+/g, "_")}_${dataFmt.replace(/\//g, "-")}.pdf`);
-                mostrarNotificacao("Relatório Geral gerado com sucesso!", "sucesso");
-            } catch (err) {
-                mostrarNotificacao("Erro ao gerar Relatório Geral.", "erro");
-            }
+                const u = getUnidadeAtual(); const cfg = getConfigUnidadeAtual();
+                const snap = { membros: [...u.membros], dataReuniao: u.dataReuniao, chamada: u.chamada, cargos: u.cargos, cantinho: u.cantinho };
+                construirESalvarPDFGeral(cfg, snap);
+                registrarHistoricoUnidade("geral", "Relatório Geral", "Relatório Consolidado da Reunião", snap);
+                mostrarNotificacao("Geral Gerado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro", "erro"); }
         };
 
-        // PDF 5: Secretário(a)
+        function construirESalvarPDFSecretario(dados, dataEm) {
+            const doc = new window.jspdf.jsPDF();
+            adicionarCabecalhoPDF(doc, "RELATÓRIO DA SECRETARIA", `Data: ${dataEm}`, [37,99,235]);
+            let y = 45;
+            doc.setFont("helvetica", "bold"); doc.text("Registros:", 14, y); y+=7;
+            doc.setFont("helvetica", "normal");
+            (dados.selecionadas||[]).forEach(s => { doc.text(`• ${s}`, 16, y); y+=6; });
+            y+=4;
+            doc.setFont("helvetica", "bold"); doc.text("Anotações e Ata:", 14, y); y+=7;
+            doc.setFont("helvetica", "normal");
+            const txt = doc.splitTextToSize(dados.anotacoes||"Nenhuma anotação.", 180);
+            doc.text(txt, 14, y); y += txt.length*6;
+            y = adicionarImagemNoPDF(doc, dados.imagem, y);
+            adicionarAssinaturasPDF(doc, y);
+            doc.save(`Secretaria_${dataEm.replace(/\//g,'-')}.pdf`);
+        }
         window.gerarPDFSecretario = function() {
             try {
-                const s = estadoApp.secretario;
-                const hoje = new Date().toLocaleDateString('pt-BR');
+                const s = estadoApp.secretario; const hj = formatarDataBR(obterDataHojeISO());
+                const snap = { selecionadas: [...s.selecionadas], anotacoes: s.anotacoes, imagem: s.imagem };
+                construirESalvarPDFSecretario(snap, hj);
+                registrarHistoricoSecretario("Relatório da Secretaria", snap);
+                mostrarNotificacao("PDF Gerado!", "sucesso");
+            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+        };
 
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                adicionarCabecalhoPDF(doc, "RELATÓRIO DA SECRETARIA - CLUBE AAZIZ", `Clube de Desbravadores Aaziz  |  Data: ${hoje}`, [37, 99, 235]);
-
-                let y = 44;
-                doc.setTextColor(15, 23, 42);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text("Registros Selecionados:", 14, y);
-                y += 7;
-
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                if (s.selecionadas.length === 0) {
-                    doc.text("- Nenhum tipo de reunião marcado.", 18, y);
-                    y += 7;
-                } else {
-                    s.selecionadas.forEach(item => {
-                        doc.text(`• ${item}`, 18, y);
-                        y += 6;
-                    });
-                }
-
-                y += 6;
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text("Anotações e Ata:", 14, y);
-                y += 7;
-
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                const texto = doc.splitTextToSize(s.anotacoes.trim() || "Sem anotações registradas.", 180);
-                doc.text(texto, 14, y);
-                y += texto.length * 6;
-
-                y = adicionarImagemNoPDF(doc, s.imagem, y);
-                adicionarAssinaturasPDF(doc, y);
-
-                doc.save(`Secretaria_Clube_Aaziz_${hoje.replace(/\//g, "-")}.pdf`);
-                mostrarNotificacao("Relatório da Secretaria gerado com sucesso!", "sucesso");
-            } catch (err) {
-                mostrarNotificacao("Erro ao gerar PDF da Secretaria.", "erro");
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener("DOMContentLoaded", () => {
+            carregarEstado();
+            
+            // App mode
+            if(estadoApp.modoEscuro) {
+                document.body.classList.add("dark-mode");
+                document.getElementById("toggle-dark-knob").classList.replace("translate-x-0", "translate-x-6");
+                document.getElementById("toggle-dark-icon").className = "fa-solid fa-moon text-blue-900 text-xs";
             }
-        };
+            
+            // Route
+            if (estadoApp.telaPrincipal === "inicio") window.irParaInicio();
+            else if (estadoApp.telaPrincipal === "unidades") window.irParaSelecaoUnidades();
+            else if (estadoApp.telaPrincipal === "secretario") window.irParaSecretario();
+            else if (estadoApp.telaPrincipal === "unidade") window.abrirUnidade(estadoApp.unidadeAtiva);
 
-        // ==================== MODAIS E NOTIFICAÇÕES ====================
-        function abrirModalConfirmacao(titulo, texto, callback) {
-            document.getElementById("modal-confirm-titulo").textContent = titulo;
-            document.getElementById("modal-confirm-texto").textContent = texto;
-            acaoConfirmacaoPendente = callback;
-            document.getElementById("modal-confirmacao").classList.remove("hidden");
-
-            document.getElementById("btn-confirmar-acao").onclick = () => {
-                if (acaoConfirmacaoPendente) acaoConfirmacaoPendente();
-                fecharModalConfirmacao();
-            };
-        }
-
-        window.fecharModalConfirmacao = function() {
-            document.getElementById("modal-confirmacao").classList.add("hidden");
-            acaoConfirmacaoPendente = null;
-        };
-
-        function mostrarNotificacao(mensagem, tipo = "info") {
-            const toast = document.getElementById("toast");
-            const toastMsg = document.getElementById("toast-msg");
-            const toastIcon = document.getElementById("toast-icon");
-
-            toastMsg.textContent = mensagem;
-            if (tipo === "sucesso") {
-                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
-            } else if (tipo === "erro") {
-                toastIcon.className = "fa-solid fa-triangle-exclamation text-red-400 text-lg";
-            } else {
-                toastIcon.className = "fa-solid fa-circle-info text-theme text-lg";
+            // Network checks
+            if (typeof atualizarStatusConexao === "function") {
+                atualizarStatusConexao();
+                window.addEventListener("online", atualizarStatusConexao);
+                window.addEventListener("offline", atualizarStatusConexao);
             }
-
-            toast.classList.remove("translate-y-24", "opacity-0");
-            setTimeout(() => {
-                toast.classList.add("translate-y-24", "opacity-0");
-            }, 3200);
-        }
-
-        // ==================== SUPORTE PWA E OFFLINE ====================
-        function atualizarStatusConexao() {
-            const dot = document.getElementById("status-offline-dot");
-            const txt = document.getElementById("status-offline-texto");
-            if (!dot || !txt) return;
-
-            if (navigator.onLine) {
-                dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-                txt.textContent = "Online";
-            } else {
-                dot.className = "w-2 h-2 rounded-full bg-amber-400";
-                txt.textContent = "Offline";
-            }
-        }
-
-        window.abrirModalOffline = function() {
-            document.getElementById("modal-offline").classList.remove("hidden");
-        };
-
-        window.fecharModalOffline = function() {
-            document.getElementById("modal-offline").classList.add("hidden");
-        };
-
-        function configurarPWA() {
-            try {
-                const baseUrl = window.location.href.split("#")[0];
-                const manifestObj = {
-                    name: "Clube de Desbravadores Aaziz",
-                    short_name: "Aaziz",
-                    start_url: baseUrl,
-                    display: "standalone",
-                    background_color: "#09090b",
-                    theme_color: "#09090b",
-                    icons: [
-                        { src: "aazizicon.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
-                    ]
-                };
-                const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-                const manifestUrl = URL.createObjectURL(blob);
-                const link = document.getElementById("pwa-manifest-link");
-                if (link) link.href = manifestUrl;
-
-                if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
-                    navigator.serviceWorker.register("./sw.js").catch(() => {});
-                }
-            } catch (e) {
-                // Ignora em ambientes sandbox
-            }
-        }
-
-        window.baixarServiceWorker = function() {
-            const swCodigo = `const CACHE_NAME = 'aaziz-dbv-offline-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './controle-desbravadores.html',
-  './aazizicon.png',
-  './icondbv.png',
-  './icondbvana.png',
-  './icondbvester.png',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS).catch(() => {}))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      }).catch(() => cached);
-    })
-  );
-});`;
-
-            const blob = new Blob([swCodigo], { type: "application/javascript" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "sw.js";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            mostrarNotificacao("Arquivo sw.js baixado! Coloque-o na mesma pasta do HTML no GitHub.", "sucesso");
-        };
+        });
     </script>
 </body>
 </html>
