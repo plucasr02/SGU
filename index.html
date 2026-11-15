@@ -120,17 +120,17 @@
         .text-theme-strong { color: var(--accent-text) !important; }
         body.dark-mode .text-theme-strong { color: #fafafa !important; }
 
-        /* Botões de rádio Sim / Não */
-        .radio-btn:checked + .label-sim {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border-color: var(--accent-color);
+        /* Botões de alternância Sim / Não */
+        .label-sim.ativo {
+            background-color: var(--accent-color) !important;
+            color: #ffffff !important;
+            border-color: var(--accent-color) !important;
             box-shadow: 0 3px 8px var(--accent-ring);
         }
-        .radio-btn:checked + .label-nao {
-            background-color: #dc2626;
-            color: #ffffff;
-            border-color: #dc2626;
+        .label-nao.ativo {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border-color: #dc2626 !important;
             box-shadow: 0 3px 8px rgba(220, 38, 38, 0.3);
         }
 
@@ -825,6 +825,10 @@
     </div>
 
     <script>
+        // ==================== CONFIGURAÇÕES E VARIÁVEIS GLOBAIS ====================
+        const STORAGE_KEY = "aaziz_clube_dbv_state_v1";
+        let acaoConfirmacaoPendente = null;
+
         // ==================== UI E MODAIS ====================
         window.mostrarNotificacao = function(mensagem, tipo = "info") {
             const toast = document.getElementById("toast");
@@ -866,16 +870,6 @@
             document.getElementById("modal-confirmacao").classList.add("hidden");
         };
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const btnConfirmar = document.getElementById("btn-confirmar-acao");
-            if (btnConfirmar) {
-                btnConfirmar.addEventListener("click", () => {
-                    if (acaoConfirmacaoPendente) acaoConfirmacaoPendente();
-                    fecharModalConfirmacao();
-                });
-            }
-        });
-
         window.abrirModalOffline = function() {
             document.getElementById("modal-offline").classList.remove("hidden");
         };
@@ -908,10 +902,7 @@
             }
         };
 
-        // ==================== CONFIGURAÇÕES E DADOS BASE ====================
-        const STORAGE_KEY = "aaziz_clube_dbv_state_v1";
-        let acaoConfirmacaoPendente = null;
-
+        // ==================== DADOS BASE ====================
         function obterDataHojeISO() {
             const hoje = new Date();
             const ano = hoje.getFullYear();
@@ -1162,7 +1153,6 @@
             document.getElementById("btn-relatorio-geral").classList.add("hidden");
             document.getElementById("nav-unidade-container").classList.add("hidden");
 
-            // Atualiza status dinâmico na home
             let totalDbv = 0;
             ["ana", "ester", "eliseu"].forEach(u => totalDbv += estadoApp.unidades[u].membros.length);
             document.getElementById("stat-total-dbvs").textContent = totalDbv;
@@ -1318,7 +1308,7 @@
             renderizarHistoricoUnidade();
         }
 
-        // ==================== ABA 1: CHAMADA ====================
+        // ==================== ABA 1: CHAMADA (COM DESMARCAÇÃO AO RECLICAR) ====================
         function renderizarListaChamada() {
             const u = getUnidadeAtual();
             const container = document.getElementById("lista-desbravadores");
@@ -1336,9 +1326,9 @@
                 const isFalta = reg.presenca === "Não";
 
                 const critHTML = CRITERIOS.map(crit => {
-                    const chkSim = reg[crit.id] === "Sim" ? "checked" : "";
-                    const chkNao = reg[crit.id] === "Não" ? "checked" : "";
-                    const dis = (isFalta && crit.id !== "presenca") ? "disabled" : "";
+                    const isSim = reg[crit.id] === "Sim";
+                    const isNao = reg[crit.id] === "Não";
+                    const dis = (isFalta && crit.id !== "presenca");
                     
                     return `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-4 rounded-xl border gap-3 ${crit.id === 'presenca' ? 'md:col-span-2 bg-theme-soft border-theme/40' : 'bg-gray-50 border-gray-100'} ${dis ? 'opacity-45 pointer-events-none' : ''}" id="container-${idx}-${crit.id}">
@@ -1351,14 +1341,14 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 self-end sm:self-center">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="dbv_${idx}_${crit.id}" value="Sim" class="sr-only radio-btn" onchange="aoAlterarOpcao(${idx}, '${crit.id}', 'Sim')" ${chkSim} ${dis}>
-                                <span class="label-sim inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-theme select-none"><i class="fa-solid fa-check mr-1.5"></i> Sim</span>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" name="dbv_${idx}_${crit.id}" value="Não" class="sr-only radio-btn" onchange="aoAlterarOpcao(${idx}, '${crit.id}', 'Não')" ${chkNao} ${dis}>
-                                <span class="label-nao inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-red-500 select-none"><i class="fa-solid fa-xmark mr-1.5"></i> Não</span>
-                            </label>
+                            <button type="button" onclick="aoAlterarOpcao(${idx}, '${crit.id}', 'Sim')" ${dis ? 'disabled' : ''}
+                                class="label-sim ${isSim ? 'ativo' : ''} inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-theme select-none cursor-pointer">
+                                <i class="fa-solid fa-check mr-1.5"></i> Sim
+                            </button>
+                            <button type="button" onclick="aoAlterarOpcao(${idx}, '${crit.id}', 'Não')" ${dis ? 'disabled' : ''}
+                                class="label-nao ${isNao ? 'ativo' : ''} inline-flex items-center justify-center px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-600 font-bold text-sm transition hover:border-red-500 select-none cursor-pointer">
+                                <i class="fa-solid fa-xmark mr-1.5"></i> Não
+                            </button>
                         </div>
                     </div>`;
                 }).join("");
@@ -1373,7 +1363,7 @@
                         </div>
                         <div class="flex justify-between gap-1">
                             ${[1,2,3,4,5].map(n => `
-                                <button onclick="aoAlterarBemEstar(${idx}, '${ind.id}', ${n})" class="escala-btn w-7 h-7 rounded bg-white border border-gray-300 text-xs font-bold text-gray-600 hover:border-theme ${val === n ? 'ativo' : ''}">
+                                <button type="button" onclick="aoAlterarBemEstar(${idx}, '${ind.id}', ${n})" class="escala-btn w-7 h-7 rounded bg-white border border-gray-300 text-xs font-bold text-gray-600 hover:border-theme ${val === n ? 'ativo' : ''}">
                                     ${n}
                                 </button>
                             `).join("")}
@@ -1408,12 +1398,25 @@
         window.aoAlterarOpcao = function(idx, critId, valor) {
             const u = getUnidadeAtual();
             if (!u.chamada[idx]) u.chamada[idx] = { bemEstar: {} };
-            u.chamada[idx][critId] = valor;
+            
+            // Alterna (desmarca) se clicar novamente na mesma opção já marcada
+            const estavaSelecionado = u.chamada[idx][critId] === valor;
+            if (estavaSelecionado) {
+                delete u.chamada[idx][critId];
+            } else {
+                u.chamada[idx][critId] = valor;
+            }
             
             if (critId === "presenca") {
-                aplicarBloqueioCriterios(idx, valor === "Não");
+                const isFalta = u.chamada[idx].presenca === "Não";
+                if (isFalta) {
+                    CRITERIOS.forEach(c => { if (c.id !== "presenca") delete u.chamada[idx][c.id]; });
+                    u.chamada[idx].bemEstar = {};
+                }
             }
+
             salvarEstado();
+            renderizarListaChamada();
             atualizarContadoresChamada();
         };
 
@@ -1422,23 +1425,13 @@
             if (!u.chamada[idx]) u.chamada[idx] = { bemEstar: {} };
             if (!u.chamada[idx].bemEstar) u.chamada[idx].bemEstar = {};
             
-            // Toggle
+            // Desmarca se clicar novamente no mesmo número
             if (u.chamada[idx].bemEstar[indicadorId] === valor) {
                 u.chamada[idx].bemEstar[indicadorId] = 0;
             } else {
                 u.chamada[idx].bemEstar[indicadorId] = valor;
             }
             
-            salvarEstado();
-            renderizarListaChamada(); // re-render just to update active buttons quickly
-        };
-
-        window.aplicarBloqueioCriterios = function(idx, bloquear) {
-            const u = getUnidadeAtual();
-            if (bloquear && u.chamada[idx]) {
-                CRITERIOS.forEach(c => { if(c.id !== "presenca") delete u.chamada[idx][c.id]; });
-                u.chamada[idx].bemEstar = {};
-            }
             salvarEstado();
             renderizarListaChamada();
         };
@@ -1494,10 +1487,9 @@
             const u = getUnidadeAtual();
             abrirModalConfirmacao("Remover Membro", `Deseja remover ${u.membros[idx]} da unidade?`, () => {
                 u.membros.splice(idx, 1);
-                // re-shift states
                 const newChamada = {};
                 const newCargos = {};
-                for(let i=0; i<u.membros.length; i++) {
+                for (let i = 0; i < u.membros.length; i++) {
                     const oldIdx = i >= idx ? i + 1 : i;
                     if (u.chamada[oldIdx]) newChamada[i] = u.chamada[oldIdx];
                     if (u.cargos[oldIdx]) newCargos[i] = u.cargos[oldIdx];
@@ -1549,7 +1541,7 @@
         window.atualizarContadorCargos = function() {
             const u = getUnidadeAtual();
             let count = 0;
-            u.membros.forEach((_, i) => { if(u.cargos[i] && u.cargos[i] !== "Sem Cargo") count++; });
+            u.membros.forEach((_, i) => { if (u.cargos[i] && u.cargos[i] !== "Sem Cargo") count++; });
             const el = document.getElementById("contador-cargos");
             if (el) el.textContent = `${count}/${u.membros.length}`;
         };
@@ -1596,12 +1588,11 @@
             
             const pEsp = document.getElementById("painel-especialidades");
             const pLiv = document.getElementById("painel-leitura");
-            if(pEsp) isEsp ? pEsp.classList.remove("hidden") : pEsp.classList.add("hidden");
-            if(pLiv) isLivro ? pLiv.classList.remove("hidden") : pLiv.classList.add("hidden");
+            if (pEsp) isEsp ? pEsp.classList.remove("hidden") : pEsp.classList.add("hidden");
+            if (pLiv) isLivro ? pLiv.classList.remove("hidden") : pLiv.classList.add("hidden");
 
-            // Especialidades
             const espCont = document.getElementById("lista-especialidades");
-            if(espCont && isEsp) {
+            if (espCont && isEsp) {
                 espCont.innerHTML = (c.especialidades || []).map(esp => {
                     const sel = (c.especialidadesSelecionadas || []).includes(esp);
                     return `
@@ -1612,9 +1603,8 @@
                 }).join("");
             }
 
-            // Leitura
             const livCont = document.getElementById("lista-livros");
-            if(livCont && isLivro) {
+            if (livCont && isLivro) {
                 livCont.innerHTML = (c.livros || []).map(liv => {
                     const sel = c.livroSelecionado === liv;
                     return `
@@ -1745,7 +1735,7 @@
             }
 
             const container = document.getElementById("lista-opcoes-secretario");
-            if(container) {
+            if (container) {
                 const todas = [...OPCOES_SECRETARIO_PADRAO.map(n => ({nome:n, pers:false})), ...(s.opcoesPersonalizadas||[]).map((n,i) => ({nome:n, pers:true, idx:i}))];
                 container.innerHTML = todas.map(op => {
                     const sel = (s.selecionadas||[]).includes(op.nome);
@@ -1891,11 +1881,11 @@
             const u = getUnidadeAtual();
             const lista = Array.isArray(u.historico) ? u.historico : [];
             const cont = document.getElementById("lista-historico-unidade");
-            if(document.getElementById("badge-historico-unidade")) document.getElementById("badge-historico-unidade").textContent = lista.length;
-            if(document.getElementById("contador-historico-unidade")) document.getElementById("contador-historico-unidade").textContent = lista.length;
+            if (document.getElementById("badge-historico-unidade")) document.getElementById("badge-historico-unidade").textContent = lista.length;
+            if (document.getElementById("contador-historico-unidade")) document.getElementById("contador-historico-unidade").textContent = lista.length;
             
-            if(!cont) return;
-            if(lista.length === 0) {
+            if (!cont) return;
+            if (lista.length === 0) {
                 document.getElementById("acoes-historico-unidade").classList.add("hidden");
                 cont.innerHTML = `<div class="surface-card bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-300"><i class="fa-solid fa-folder-open text-4xl text-theme mb-3"></i><h3 class="font-extrabold text-gray-800">Nenhum relatório emitido</h3></div>`;
                 return;
@@ -1926,7 +1916,7 @@
                 else if (item.tipo === "cantinho") construirESalvarPDFCantinho(cfg, item.snapshot);
                 else if (item.tipo === "geral") construirESalvarPDFGeral(cfg, item.snapshot);
                 mostrarNotificacao("PDF baixado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro ao gerar.", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro ao gerar.", "erro"); }
         };
 
         window.solicitarExcluirItemHistoricoUnidade = function(idx) {
@@ -1946,11 +1936,11 @@
         function renderizarHistoricoSecretario() {
             const lista = Array.isArray(estadoApp.secretario.historico) ? estadoApp.secretario.historico : [];
             const cont = document.getElementById("lista-historico-secretario");
-            if(document.getElementById("badge-historico-secretario")) document.getElementById("badge-historico-secretario").textContent = lista.length;
-            if(document.getElementById("contador-historico-secretario")) document.getElementById("contador-historico-secretario").textContent = lista.length;
+            if (document.getElementById("badge-historico-secretario")) document.getElementById("badge-historico-secretario").textContent = lista.length;
+            if (document.getElementById("contador-historico-secretario")) document.getElementById("contador-historico-secretario").textContent = lista.length;
             
-            if(!cont) return;
-            if(lista.length === 0) {
+            if (!cont) return;
+            if (lista.length === 0) {
                 document.getElementById("acoes-historico-secretario").classList.add("hidden");
                 cont.innerHTML = `<div class="surface-card bg-white rounded-2xl p-10 text-center border-2 border-dashed border-gray-300"><i class="fa-solid fa-folder-open text-4xl text-blue-600 mb-3"></i><h3 class="font-extrabold text-gray-800">Nenhum relatório emitido</h3></div>`;
                 return;
@@ -1974,11 +1964,11 @@
             const item = estadoApp.secretario.historico[idx];
             if (!item || !item.snapshot) return;
             try { construirESalvarPDFSecretario(item.snapshot, item.dataEmissaoBR); mostrarNotificacao("PDF baixado!", "sucesso"); }
-            catch(e) { mostrarNotificacao("Erro", "erro"); }
+            catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         window.solicitarExcluirItemHistoricoSecretario = function(idx) {
-            abrirModalConfirmacao("Remover", "Certeza?", () => { estadoApp.secretario.historico.splice(idx,1); salvarEstado(); renderizarHistoricoSecretario(); });
+            abrirModalConfirmacao("Remover", "Certeza?", () => { estadoApp.secretario.historico.splice(idx, 1); salvarEstado(); renderizarHistoricoSecretario(); });
         };
         window.solicitarLimparHistoricoSecretario = function() {
             abrirModalConfirmacao("Limpar", "Apagar tudo?", () => { estadoApp.secretario.historico = []; salvarEstado(); renderizarHistoricoSecretario(); });
@@ -2018,7 +2008,7 @@
                 yPos += 5;
                 doc.addImage(base64, 'JPEG', 14, yPos, 80, 80, '', 'FAST');
                 return yPos + 85;
-            } catch(e) { return yPos; }
+            } catch (e) { return yPos; }
         }
 
         // ==================== PDF GERAÇÃO ====================
@@ -2045,7 +2035,7 @@
                 construirESalvarPDFChamada(cfg, snap);
                 registrarHistoricoUnidade("chamada", "Chamada", `Data: ${formatarDataBR(u.dataReuniao)}`, snap);
                 mostrarNotificacao("Relatório PDF Gerado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         function construirESalvarPDFCargos(cfg, dados, dataEm) {
@@ -2063,7 +2053,7 @@
                 construirESalvarPDFCargos(cfg, snap, hj);
                 registrarHistoricoUnidade("cargos", "Cargos", "Relatório de Cargos da Unidade", snap);
                 mostrarNotificacao("Cargos Gerado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         function construirESalvarPDFCantinho(cfg, dados) {
@@ -2075,8 +2065,8 @@
             doc.setFont("helvetica", "normal");
             (c.atividadesSelecionadas||[]).forEach(at => {
                 let lbl = (ATIVIDADES_CANTINHO.find(x=>x.id===at)||{}).label || at;
-                if(at==="especialidades" && c.especialidadesSelecionadas?.length) lbl += ` (${c.especialidadesSelecionadas.join(", ")})`;
-                if(at==="leitura" && c.livroSelecionado) lbl += ` (Livro: ${c.livroSelecionado})`;
+                if (at === "especialidades" && c.especialidadesSelecionadas?.length) lbl += ` (${c.especialidadesSelecionadas.join(", ")})`;
+                if (at === "leitura" && c.livroSelecionado) lbl += ` (Livro: ${c.livroSelecionado})`;
                 doc.text(`• ${lbl}`, 16, y); y += 6;
             });
             y += 4;
@@ -2095,7 +2085,7 @@
                 construirESalvarPDFCantinho(cfg, snap);
                 registrarHistoricoUnidade("cantinho", "Cantinho", "Relatório do Cantinho", snap);
                 mostrarNotificacao("Cantinho Gerado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         function construirESalvarPDFGeral(cfg, dados) {
@@ -2134,21 +2124,21 @@
                 construirESalvarPDFGeral(cfg, snap);
                 registrarHistoricoUnidade("geral", "Relatório Geral", "Relatório Consolidado da Reunião", snap);
                 mostrarNotificacao("Geral Gerado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         function construirESalvarPDFSecretario(dados, dataEm) {
             const doc = new window.jspdf.jsPDF();
             adicionarCabecalhoPDF(doc, "RELATÓRIO DA SECRETARIA", `Data: ${dataEm}`, [37,99,235]);
             let y = 45;
-            doc.setFont("helvetica", "bold"); doc.text("Registros:", 14, y); y+=7;
+            doc.setFont("helvetica", "bold"); doc.text("Registros:", 14, y); y += 7;
             doc.setFont("helvetica", "normal");
-            (dados.selecionadas||[]).forEach(s => { doc.text(`• ${s}`, 16, y); y+=6; });
-            y+=4;
-            doc.setFont("helvetica", "bold"); doc.text("Anotações e Ata:", 14, y); y+=7;
+            (dados.selecionadas||[]).forEach(s => { doc.text(`• ${s}`, 16, y); y += 6; });
+            y += 4;
+            doc.setFont("helvetica", "bold"); doc.text("Anotações e Ata:", 14, y); y += 7;
             doc.setFont("helvetica", "normal");
             const txt = doc.splitTextToSize(dados.anotacoes||"Nenhuma anotação.", 180);
-            doc.text(txt, 14, y); y += txt.length*6;
+            doc.text(txt, 14, y); y += txt.length * 6;
             y = adicionarImagemNoPDF(doc, dados.imagem, y);
             adicionarAssinaturasPDF(doc, y);
             doc.save(`Secretaria_${dataEm.replace(/\//g,'-')}.pdf`);
@@ -2160,27 +2150,32 @@
                 construirESalvarPDFSecretario(snap, hj);
                 registrarHistoricoSecretario("Relatório da Secretaria", snap);
                 mostrarNotificacao("PDF Gerado!", "sucesso");
-            } catch(e) { mostrarNotificacao("Erro", "erro"); }
+            } catch (e) { mostrarNotificacao("Erro", "erro"); }
         };
 
         // ==================== INICIALIZAÇÃO ====================
         document.addEventListener("DOMContentLoaded", () => {
+            const btnConfirmar = document.getElementById("btn-confirmar-acao");
+            if (btnConfirmar) {
+                btnConfirmar.addEventListener("click", () => {
+                    if (acaoConfirmacaoPendente) acaoConfirmacaoPendente();
+                    fecharModalConfirmacao();
+                });
+            }
+
             carregarEstado();
             
-            // App mode
-            if(estadoApp.modoEscuro) {
+            if (estadoApp.modoEscuro) {
                 document.body.classList.add("dark-mode");
                 document.getElementById("toggle-dark-knob").classList.replace("translate-x-0", "translate-x-6");
                 document.getElementById("toggle-dark-icon").className = "fa-solid fa-moon text-blue-900 text-xs";
             }
             
-            // Route
             if (estadoApp.telaPrincipal === "inicio") window.irParaInicio();
             else if (estadoApp.telaPrincipal === "unidades") window.irParaSelecaoUnidades();
             else if (estadoApp.telaPrincipal === "secretario") window.irParaSecretario();
             else if (estadoApp.telaPrincipal === "unidade") window.abrirUnidade(estadoApp.unidadeAtiva);
 
-            // Network checks
             if (typeof atualizarStatusConexao === "function") {
                 atualizarStatusConexao();
                 window.addEventListener("online", atualizarStatusConexao);
